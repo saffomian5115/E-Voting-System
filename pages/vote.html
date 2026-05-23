@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vote - Biometric Secure E-Voting System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="checkLogin()">
+
+<header class="main-header">
+    <div class="logo">
+  <span>E-Voting System</span>
+</div>
+    <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="register.html">Registration</a>
+        <a href="login.html">Login</a>
+        <a href="vote.html" class="active">Vote</a>
+        <a href="result.html">Result</a>
+    </nav>
+</header>
+
+<section class="vote-section">
+    <h1 class="vote-title">Cast Your Secure Vote</h1>
+
+    <div class="candidate-container">
+
+        <div class="candidate-card">
+            <h3>Candidate A</h3>
+            <p>Reform Party</p>
+            <button type="button" onclick="castVote('Candidate A')">
+
+        </div>
+
+        <div class="candidate-card">
+            <h3>Candidate B</h3>
+            <p>Justice Party</p>
+            <button type="button" onclick="castVote('Candidate B')">
+
+        </div>
+
+        <div class="candidate-card">
+            <h3>Candidate C</h3>
+            <p>Unity Party</p>
+            <button type="button" onclick="castVote('Candidate C')">
+
+        </div>
+
+    </div>
+
+    <!-- Feedback Messages -->
+    <p id="vote-success" style="display:none; color:lime; margin-top:20px;">
+        ✅ Your vote has been recorded successfully!
+    </p>
+
+</section>
+
+<footer class="main-footer">
+    © 2026 Biometric Secure E-Voting System
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>

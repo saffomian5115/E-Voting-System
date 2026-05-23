@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voters — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg       : #04090f;
+      --surface  : #080f1c;
+      --surface2 : #0c1525;
+      --border   : rgba(0,234,255,.12);
+      --border-h : rgba(0,234,255,.35);
+      --cyan     : #00eaff;
+      --cyan-dim : rgba(0,234,255,.7);
+      --green    : #00ff88;
+      --red      : #ff4466;
+      --amber    : #ffb300;
+      --text     : rgba(255,255,255,.88);
+      --muted    : rgba(255,255,255,.4);
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-head: 'Orbitron', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; flex-direction: column; }
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px);
+      pointer-events: none; z-index: 0;
+    }
+    nav, main, footer { position: relative; z-index: 1; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+      background: rgba(4,9,15,.9); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; letter-spacing: .06em; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; color: var(--cyan); letter-spacing: .1em; }
+    .btn-logout { font-size: .72rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-mono); transition: color .2s, border-color .2s; }
+    .btn-logout:hover { color: var(--red); border-color: rgba(255,68,102,.4); }
+
+    /* Login overlay */
+    #login-overlay {
+      position: fixed; inset: 0; background: var(--bg); z-index: 999;
+      display: none; align-items: center; justify-content: center;
+    }
+    .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px; }
+    .login-title { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
+    .login-sub { font-size: .72rem; color: var(--muted); margin-bottom: 2rem; }
+    .field-group { margin-bottom: 1rem; }
+    .field-group label { display: block; font-size: .68rem; color: var(--cyan-dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
+    .field-group input:focus { border-color: var(--border-h); }
+    .field-group input::placeholder { color: var(--muted); }
+    #login-err { color: var(--red); font-size: .72rem; margin-bottom: .8rem; display: none; }
+    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
+    .btn-login:hover { background: rgba(0,234,255,.22); }
+
+    /* ── Main ── */
+    main { flex: 1; padding: 2rem 1.5rem; max-width: 1300px; margin: 0 auto; width: 100%; }
+
+    /* Page header */
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+      animation: fadeUp .4s ease both;
+    }
+    .page-title { font-family: var(--font-head); font-size: 1rem; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
+    .page-sub { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
+
+    /* Stats row */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: .8rem; margin-bottom: 1.5rem;
+      animation: fadeUp .4s .06s ease both;
+    }
+    .stat-mini {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; text-align: center;
+    }
+    .stat-mini-num { font-family: var(--font-head); font-size: 1.4rem; color: var(--cyan); display: block; }
+    .stat-mini-num.green { color: var(--green); }
+    .stat-mini-num.amber { color: var(--amber); }
+    .stat-mini-label { font-size: .62rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: .7rem; align-items: center;
+      margin-bottom: 1rem; animation: fadeUp .4s .1s ease both;
+    }
+    .toolbar input {
+      flex: 1; min-width: 180px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .82rem;
+      padding: .55rem .9rem; outline: none; transition: border-color .2s;
+    }
+    .toolbar input:focus { border-color: var(--border-h); }
+    .toolbar input::placeholder { color: var(--muted); }
+
+    .filter-btn {
+      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-family: var(--font-mono);
+      cursor: pointer; transition: all .2s; border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+    }
+    .filter-btn:hover { border-color: rgba(0,234,255,.3); color: var(--cyan); }
+    .filter-btn.active { border-color: var(--cyan); background: rgba(0,234,255,.08); color: var(--cyan); }
+    .filter-btn.green-f.active { border-color: var(--green); background: rgba(0,255,136,.06); color: var(--green); }
+    .filter-btn.red-f.active   { border-color: var(--red);   background: rgba(255,68,102,.06); color: var(--red); }
+
+    .btn-export {
+      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-family: var(--font-mono);
+      cursor: pointer; border: 1px solid rgba(0,234,255,.25); background: rgba(0,234,255,.06);
+      color: var(--cyan); transition: background .2s;
+    }
+    .btn-export:hover { background: rgba(0,234,255,.14); }
+
+    /* Table card */
+    .table-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      animation: fadeUp .4s .14s ease both;
+    }
+    .table-card-header {
+      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+      font-family: var(--font-head); font-size: .7rem; letter-spacing: .14em;
+      color: var(--cyan-dim); text-transform: uppercase;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    thead th {
+      font-family: var(--font-head); font-size: .62rem; letter-spacing: .1em;
+      color: var(--cyan-dim); text-transform: uppercase;
+      padding: .65rem 1rem; border-bottom: 1px solid var(--border);
+      text-align: left; white-space: nowrap;
+      cursor: pointer; user-select: none;
+    }
+    thead th:hover { color: var(--cyan); }
+    thead th.sorted { color: var(--cyan); }
+    thead th .sort-arrow { margin-left: .3rem; font-size: .6rem; }
+
+    tbody td { padding: .7rem 1rem; border-bottom: 1px solid rgba(0,234,255,.04); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover td { background: rgba(0,234,255,.025); }
+
+    .voted-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .2rem .65rem; border-radius: 20px; font-size: .68rem;
+    }
+    .voted-badge.yes { color: var(--green); border: 1px solid rgba(0,255,136,.3); background: rgba(0,255,136,.06); }
+    .voted-badge.no  { color: var(--muted); border: 1px solid var(--border); }
+
+    .gender-badge {
+      font-size: .65rem; color: var(--muted); padding: .15rem .5rem;
+      border-radius: 4px; border: 1px solid var(--border);
+    }
+
+    .td-cnic { font-size: .72rem; color: var(--muted); font-family: var(--font-mono); white-space: nowrap; }
+    .td-name { font-size: .82rem; }
+    .td-email { font-size: .7rem; color: var(--muted); }
+    .td-loc { font-size: .68rem; color: var(--muted); }
+
+    /* Pagination */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; border-top: 1px solid var(--border);
+      font-size: .72rem; color: var(--muted);
+    }
+    .page-btns { display: flex; gap: .4rem; }
+    .page-btn {
+      width: 30px; height: 30px; border-radius: 5px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font-mono);
+      font-size: .72rem; display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: rgba(0,234,255,.3); color: var(--cyan); }
+    .page-btn.active { border-color: var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); }
+    .page-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* Empty */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: .8rem; }
+    .empty-state .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .8rem; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+      padding: .9rem 1.6rem; font-size: .82rem; min-width: 260px; text-align: center;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+      opacity: 0; z-index: 999; pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.ok  { border-color: rgba(0,255,136,.4); color: var(--green); }
+    #toast.err { border-color: rgba(255,68,102,.4); color: var(--red); }
+
+    footer { text-align: center; padding: 1.2rem; color: var(--muted); font-size: .7rem; border-top: 1px solid var(--border); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="login-overlay">
+  <div class="login-box">
+    <p class="login-title">Admin Login</p>
+    <p class="login-sub">E-Voting System Control Panel</p>
+    <div class="field-group">
+      <label>Username</label>
+      <input type="text" id="adm-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Password</label>
+      <input type="password" id="adm-pass" placeholder="••••••••"
+             onkeydown="if(event.key==='Enter') adminLogin()">
+    </div>
+    <div id="login-err"></div>
+    <button class="btn-login" onclick="adminLogin()">Login Karo</button>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="index.html">E<span>·</span>VOTE <span style="font-size:.65rem;color:var(--amber)">ADMIN</span></a>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="candidates.html">Candidates</a>
+    <a href="voters.html" class="active">Voters</a>
+    <a href="schedule.html">Schedule</a>
+    <span class="admin-badge" id="admin-name">Admin</span>
+    <button class="btn-logout" onclick="adminLogout()">Logout</button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <div>
+      <p class="page-title">Voters Management</p>
+      <p class="page-sub">Registered voters ki complete list — status aur location ke saath</p>
+    </div>
+    <button class="btn-export" onclick="exportCSV()">⬇ CSV Export</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <span class="stat-mini-num" id="s-total">--</span>
+      <span class="stat-mini-label">Total Voters</span>
+    </div>
+    <div class="stat-mini">
+      <span class="stat-mini-num green" id="s-voted">--</span>
+      <span class="stat-mini-label">Vote De Chuke</span>
+    </div>
+    <div class="stat-mini">
+      <span class="stat-mini-num" id="s-pending">--</span>
+      <span class="stat-mini-label">Pending</span>
+    </div>
+    <div class="stat-mini">
+      <span class="stat-mini-num amber" id="s-turnout">--%</span>
+      <span class="stat-mini-label">Turnout</span>
+    </div>
+    <div class="stat-mini">
+      <span class="stat-mini-num" id="s-male">--</span>
+      <span class="stat-mini-label">Male</span>
+    </div>
+    <div class="stat-mini">
+      <span class="stat-mini-num" id="s-female">--</span>
+      <span class="stat-mini-label">Female</span>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input type="text" id="search-q" placeholder="Naam, CNIC ya email se dhundho..."
+           oninput="applyFilters()">
+    <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">Sab</button>
+    <button class="filter-btn green-f" id="f-voted" onclick="setFilter('voted')">Vote Diya ✓</button>
+    <button class="filter-btn red-f"   id="f-not"   onclick="setFilter('not')">Pending</button>
+    <span style="font-size:.72rem;color:var(--muted);margin-left:auto" id="filter-count"></span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <span>Voters List</span>
+      <span id="showing-label" style="font-size:.65rem;color:var(--muted)"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('name')">#  <span class="sort-arrow" id="sort-name"></span></th>
+            <th>Naam</th>
+            <th onclick="sortBy('cnic')">CNIC <span class="sort-arrow" id="sort-cnic"></span></th>
+            <th>Email</th>
+            <th>Jins / Umar</th>
+            <th onclick="sortBy('hasVoted')">Status <span class="sort-arrow" id="sort-hasVoted"></span></th>
+            <th onclick="sortBy('voted_at')">Vote Time <span class="sort-arrow" id="sort-voted_at"></span></th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody id="voters-tbody">
+          <tr><td colspan="8"><div class="empty-state"><span class="empty-icon">⏳</span>Load ho raha hai...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span id="page-info">--</span>
+      <div class="page-btns" id="page-btns"></div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2025 E-Voting System · Admin Panel</footer>
+<div id="toast"></div>
+
+<script src="admin.js"></script>
+<script>
+  const PAGE_SIZE = 20;
+  let allVoters     = [];
+  let filteredVoters = [];
+  let currentPage   = 1;
+  let currentFilter = "all";
+  let sortKey       = "name";
+  let sortDir       = 1; // 1 = asc, -1 = desc
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  window.addEventListener("DOMContentLoaded", () => {
+    requireAdmin(onAdminReady);
+  });
+
+  function onAdminReady() {
+    loadVoters();
+  }
+
+  // ── Load voters ───────────────────────────────────────────────────────────
+  async function loadVoters() {
+    try {
+      const [vRes, sRes] = await Promise.all([
+        fetch(`${API}/admin/voters`, { credentials: "include" }),
+        fetch(`${API}/results/stats`, { credentials: "include" }),
+      ]);
+      const vData = await vRes.json();
+      const sData = await sRes.json();
+
+      allVoters = vData.voters || [];
+
+      // Stats
+      setText("s-total",   vData.total   ?? "--");
+      setText("s-voted",   vData.voted   ?? "--");
+      setText("s-pending", vData.not_voted ?? "--");
+      if (vData.total > 0)
+        setText("s-turnout", Math.round(vData.voted / vData.total * 100) + "%");
+
+      // Gender breakdown
+      const males   = allVoters.filter(v => v.gender === "male").length;
+      const females = allVoters.filter(v => v.gender === "female").length;
+      setText("s-male",   males);
+      setText("s-female", females);
+
+      applyFilters();
+    } catch(e) {
+      showToast("Voters load nahi hue", "err");
+    }
+  }
+
+  // ── Filters ───────────────────────────────────────────────────────────────
+  function setFilter(f) {
+    currentFilter = f;
+    currentPage   = 1;
+    ["all","voted","not"].forEach(id => {
+      const btn = document.getElementById(`f-${id}`);
+      if (btn) btn.classList.toggle("active", id === f);
+    });
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const q = document.getElementById("search-q").value.toLowerCase().trim();
+
+    filteredVoters = allVoters.filter(v => {
+      // Status filter
+      if (currentFilter === "voted" && !v.hasVoted)  return false;
+      if (currentFilter === "not"   &&  v.hasVoted)  return false;
+      // Search
+      if (q) {
+        const haystack = [v.name, v.cnic, v.email, v.address].join(" ").toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+
+    // Sort
+    filteredVoters.sort((a, b) => {
+      let aVal = a[sortKey] ?? "";
+      let bVal = b[sortKey] ?? "";
+      if (typeof aVal === "boolean") { aVal = aVal ? 1 : 0; bVal = bVal ? 1 : 0; }
+      if (aVal < bVal) return -sortDir;
+      if (aVal > bVal) return  sortDir;
+      return 0;
+    });
+
+    currentPage = 1;
+    renderTable();
+  }
+
+  function sortBy(key) {
+    if (sortKey === key) { sortDir *= -1; }
+    else { sortKey = key; sortDir = 1; }
+    // Update arrows
+    ["name","cnic","hasVoted","voted_at"].forEach(k => {
+      const el = document.getElementById(`sort-${k}`);
+      if (el) el.textContent = k === sortKey ? (sortDir === 1 ? "↑" : "↓") : "";
+    });
+    applyFilters();
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function renderTable() {
+    const total  = filteredVoters.length;
+    const start  = (currentPage - 1) * PAGE_SIZE;
+    const end    = Math.min(start + PAGE_SIZE, total);
+    const page   = filteredVoters.slice(start, end);
+
+    document.getElementById("page-info").textContent =
+      `${start + 1}–${end} / ${total} voters`;
+    document.getElementById("showing-label").textContent =
+      `${filteredVoters.length} result${filteredVoters.length !== 1 ? "s" : ""}`;
+
+    const tbody = document.getElementById("voters-tbody");
+    if (page.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><span class="empty-icon">🔍</span>Koi voter is filter se nahi mila</div></td></tr>`;
+      renderPagination(0);
+      return;
+    }
+
+    tbody.innerHTML = page.map((v, i) => {
+      const loc = v.vote_location;
+      const locStr = loc ? (loc.city ? `${loc.city}${loc.area ? ", " + loc.area : ""}` : `${loc.latitude?.toFixed(3)}, ${loc.longitude?.toFixed(3)}`) : "--";
+      return `
+        <tr>
+          <td style="color:var(--muted);font-size:.68rem">${start + i + 1}</td>
+          <td>
+            <div class="td-name">${v.name}</div>
+            <div class="td-email">${v.email}</div>
+          </td>
+          <td class="td-cnic">${v.cnic}</td>
+          <td class="td-email" style="font-size:.7rem">${v.email}</td>
+          <td>
+            <span class="gender-badge">${v.gender === "male" ? "♂" : v.gender === "female" ? "♀" : "—"}</span>
+            <span style="font-size:.68rem;color:var(--muted);margin-left:.3rem">${v.age ?? "--"}</span>
+          </td>
+          <td>
+            <span class="voted-badge ${v.hasVoted ? "yes" : "no"}">
+              ${v.hasVoted ? "✓ Voted" : "○ Pending"}
+            </span>
+          </td>
+          <td class="td-loc">${v.voted_at ? fmtDate(v.voted_at) : "--"}</td>
+          <td class="td-loc">${locStr}</td>
+        </tr>
+      `;
+    }).join("");
+
+    renderPagination(total);
+  }
+
+  function renderPagination(total) {
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+    const container = document.getElementById("page-btns");
+    container.innerHTML = "";
+
+    // Prev
+    const prev = document.createElement("button");
+    prev.className = "page-btn";
+    prev.textContent = "‹";
+    prev.disabled = currentPage === 1;
+    prev.onclick = () => { currentPage--; renderTable(); };
+    container.appendChild(prev);
+
+    // Page numbers
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - currentPage) > 2) {
+        if (p === 3 || p === totalPages - 2) {
+          const dots = document.createElement("button");
+          dots.className = "page-btn"; dots.textContent = "…"; dots.disabled = true;
+          container.appendChild(dots);
+        }
+        continue;
+      }
+      const btn = document.createElement("button");
+      btn.className = `page-btn ${p === currentPage ? "active" : ""}`;
+      btn.textContent = p;
+      btn.onclick = () => { currentPage = p; renderTable(); };
+      container.appendChild(btn);
+    }
+
+    // Next
+    const next = document.createElement("button");
+    next.className = "page-btn";
+    next.textContent = "›";
+    next.disabled = currentPage >= totalPages;
+    next.onclick = () => { currentPage++; renderTable(); };
+    container.appendChild(next);
+  }
+
+  // ── Export CSV ────────────────────────────────────────────────────────────
+  function exportCSV() {
+    const headers = ["Naam","CNIC","Email","Jins","Umar","Address","Voted","Vote Time","City"];
+    const rows = filteredVoters.map(v => {
+      const loc = v.vote_location;
+      return [
+        v.name, v.cnic, v.email, v.gender, v.age, v.address,
+        v.hasVoted ? "Yes" : "No",
+        v.voted_at ? new Date(v.voted_at).toLocaleString("en-PK") : "",
+        loc?.city || "",
+      ].map(f => `"${String(f ?? "").replace(/"/g,'""')}"`).join(",");
+    });
+
+    const csv  = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `voters_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("✓ CSV download ho gaya", "ok");
+  }
+</script>
+</body>
+</html>

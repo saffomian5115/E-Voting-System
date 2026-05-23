@@ -1,0 +1,257 @@
+# E-Voting System — Project To Do List
+### Stack: Flask · MongoDB · HTML/CSS/JS · SecuGen HU20 · SGI BWAPI
+
+---
+
+## MODULE 1 — Project Setup & Configuration
+**Goal:** Poora environment ready karna, koi bhi module is ke bina kaam nahi karega.
+
+- [ ] Folder structure banana (Backend/, Frontend/, static/)
+- [ ] Python virtual environment setup karna
+- [ ] requirements.txt likhna (flask, flask-cors, pymongo, bcrypt, python-dateutil)
+- [ ] MongoDB local connection banana (`evoting` database)
+- [ ] config.py likhna — DB collections: voters, candidates, admin, voting_schedule
+- [ ] SGI BWAPI local service (port 9734) test karna — browser se ping karna
+- [ ] .env file banana — SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD_HASH
+- [ ] app.py main Flask entry point banana (CORS, Blueprints register)
+- [ ] MongoDB mein seed data dalna — ek test admin account
+
+---
+
+## MODULE 2 — Fingerprint Engine (Core)
+**Goal:** SecuGen HU20 se fingerprint capture karna aur server pe match karna.
+
+### Frontend (JS):
+- [ ] SGI BWAPI JS SDK integrate karna (FPWebHost port 9734 se connect)
+- [ ] `captureFingerprint()` function likhna — ISO template bytes return kare
+- [ ] Fingerprint status UI banana (scanning... / verified / failed)
+- [ ] Template ko base64 mein convert karke Flask ko bhejna
+
+### Backend (Python):
+- [ ] `fingerprint.py` module banana
+- [ ] `store_template(user_id, base64_template)` function
+- [ ] `match_template(incoming_b64, stored_b64)` function
+  - SecuGen SDK ya basic byte comparison use karna
+- [ ] Match score threshold set karna (e.g. score > 40 = match)
+- [ ] `/api/fp/verify` POST route banana — template lo, match karo, True/False return karo
+
+---
+
+## MODULE 3 — Authentication (Register & Login)
+**Goal:** Voter registration aur login with fingerprint + password dono required.
+
+### Register:
+- [ ] `POST /api/register` route
+  - Fields: name, age, gender, CNIC, email, password, address, fp_template
+  - CNIC unique check karna
+  - Email unique check karna
+  - Password bcrypt se hash karna
+  - fp_template base64 store karna
+  - hasVoted: False set karna
+- [ ] Register page UI — Left: form fields | Arrow | Right: fingerprint scan
+- [ ] Validation — sab fields required, CNIC format check
+
+### Login:
+- [ ] `POST /api/login` route
+  - Email + password check (bcrypt compare)
+  - Fingerprint template match karna
+  - Dono pass ho tabhie login ho
+  - Session mein voter_id store karna
+- [ ] Login page UI — Email/Password + Fingerprint scan
+- [ ] Session management — Flask session ya JWT token
+- [ ] Logout route `GET /api/logout`
+
+---
+
+## MODULE 4 — Admin Panel
+**Goal:** Admin sab kuch control kare — candidates, voting schedule, voters dekhe, reset kare.
+
+### Admin Auth:
+- [ ] `POST /api/admin/login` — username + hashed password check
+- [ ] Admin session alag rakho voter session se
+- [ ] Admin pages pe middleware lagao (login required)
+
+### Candidates Management:
+- [ ] `GET /api/admin/candidates` — sab candidates list
+- [ ] `POST /api/admin/candidates` — naya candidate add karo (name, party, photo optional)
+- [ ] `DELETE /api/admin/candidates/<id>` — candidate remove karo
+- [ ] Admin UI mein candidate form + list with delete button
+
+### Voting Schedule:
+- [ ] `POST /api/admin/schedule` — voting date set karo (start datetime, end datetime)
+- [ ] `GET /api/admin/schedule` — current schedule dekho
+- [ ] MongoDB `voting_schedule` collection mein store karo
+- [ ] Admin UI mein date/time picker
+
+### Voters Management:
+- [ ] `GET /api/admin/voters` — sab voters ki list (name, CNIC, email, hasVoted, location)
+- [ ] `POST /api/admin/reset` — sab votes reset karo (confirm dialog ke saath)
+- [ ] Admin UI mein voters table + charts (Chart.js)
+
+---
+
+## MODULE 5 — Voting System
+**Goal:** Sirf eligible voter vote kar sake, sirf schedule ke andar, sirf ek baar, with location.
+
+### Vote Eligibility Checks (backend):
+- [ ] Voter logged in hai? (session check)
+- [ ] Aaj voting ka din hai? (schedule check — start <= now <= end)
+- [ ] Voter pehle vote nahi de chuka? (hasVoted check)
+- [ ] Vote karte waqt fingerprint dobara verify karo
+
+### Location Capture:
+- [ ] Frontend pe `navigator.geolocation.getCurrentPosition()` use karo
+- [ ] Latitude, Longitude capture karo
+- [ ] Reverse geocoding — coordinates se city/area naam nikalo
+  - OpenStreetMap Nominatim API use karo (free, no key needed)
+  - `https://nominatim.openstreetmap.org/reverse?lat=X&lon=Y&format=json`
+- [ ] Vote ke saath location MongoDB mein store karo
+
+### Vote Cast:
+- [ ] `POST /api/vote` route
+  - Fingerprint verify karo
+  - Schedule check karo
+  - hasVoted check karo
+  - Location store karo (lat, lon, city, area)
+  - candidates mein votes++ karo
+  - voter ka hasVoted: True karo
+  - voted_at timestamp store karo
+- [ ] Vote page UI — candidate cards with party name + Vote button
+- [ ] Vote karne ke baad confirmation screen
+
+---
+
+## MODULE 6 — Results Page
+**Goal:** Live results dikhana with chart, winner highlight, aur voting stats.
+
+- [ ] `GET /api/results` — sab candidates with vote counts
+- [ ] Results page UI:
+  - Bar chart (Chart.js) — live update har 5 second
+  - Winner highlight (highest votes)
+  - Total votes cast counter
+  - Voting turnout percentage
+- [ ] Results sirf schedule khatam hone ke baad public dikhao
+  - Ya admin ka option ho — results early publish karo
+- [ ] `GET /api/results/stats` — total voters, voted, not voted, turnout %
+
+---
+
+## MODULE 7 — Frontend UI (All Pages)
+**Goal:** Clean, modern, dark-theme UI — E-voting system ke liye professional look.
+
+### Pages banana:
+- [ ] `index.html` — Landing page (hero, how it works, security features)
+- [ ] `register.html` — Registration form + fingerprint panel
+- [ ] `login.html` — Login form + fingerprint panel
+- [ ] `vote.html` — Candidate cards + location permission
+- [ ] `result.html` — Live chart + stats
+- [ ] `admin/index.html` — Admin dashboard
+- [ ] `admin/candidates.html` — Candidates CRUD
+- [ ] `admin/voters.html` — Voters list + map (optional)
+- [ ] `admin/schedule.html` — Voting date set karna
+
+### UI Design Rules:
+- [ ] Dark theme — deep navy/black background
+- [ ] Cyan/teal accent color (#00eaff range)
+- [ ] Glass morphism cards (backdrop-filter: blur)
+- [ ] Responsive — mobile bhi theek dikhe
+- [ ] Navbar — logo left, links right, active state
+- [ ] Footer — copyright
+
+### script.js (shared JS):
+- [ ] `captureFingerprint()` — SGI BWAPI call
+- [ ] `registerUser()` — form + FP data bhejna
+- [ ] `loginUser()` — email/pass + FP verify
+- [ ] `castVote(candidateId)` — FP + location + vote
+- [ ] `loadResults()` — chart update
+- [ ] `checkVotingSchedule()` — vote button enable/disable
+- [ ] Admin JS alag file mein (`admin.js`)
+
+---
+
+## MODULE 8 — Testing, Security & Final Polish
+**Goal:** System secure ho, bugs na hon, demo ke liye ready ho.
+
+### Security:
+- [ ] Passwords bcrypt hashed — plain text kabhi store na ho
+- [ ] Admin password bhi hashed
+- [ ] Flask SECRET_KEY strong rakho
+- [ ] CORS sirf localhost allow karo (production ke liye restrict)
+- [ ] Double vote server side bhi check ho (client side pe trust mat karo)
+- [ ] Fingerprint match server pe ho — client pe nahi
+
+### Testing:
+- [ ] Kam az kam 3 test voters register karo (alag fingerprints)
+- [ ] Double vote test karo — 2nd vote reject hona chahiye
+- [ ] Wrong schedule test karo — schedule se bahar vote reject ho
+- [ ] Admin reset test karo
+- [ ] Location test karo — city correctly capture ho
+
+### Final Polish:
+- [ ] Loading spinners sab fetch calls pe
+- [ ] Error messages user-friendly hon (Urdu optional)
+- [ ] Console.log sab production se hatao
+- [ ] README.md likhna — setup instructions
+- [ ] Final demo walkthrough test karo end-to-end
+
+---
+
+## Quick Reference — API Routes
+
+| Method | Route | Module | Description |
+|--------|-------|--------|-------------|
+| POST | /api/register | M3 | Voter register |
+| POST | /api/login | M3 | Voter login |
+| GET | /api/logout | M3 | Logout |
+| POST | /api/fp/verify | M2 | FP match check |
+| POST | /api/vote | M5 | Cast vote |
+| GET | /api/results | M6 | Get results |
+| GET | /api/results/stats | M6 | Voting stats |
+| POST | /api/admin/login | M4 | Admin login |
+| GET | /api/admin/voters | M4 | All voters list |
+| POST | /api/admin/reset | M4 | Reset all votes |
+| GET | /api/admin/candidates | M4 | List candidates |
+| POST | /api/admin/candidates | M4 | Add candidate |
+| DELETE | /api/admin/candidates/<id> | M4 | Remove candidate |
+| POST | /api/admin/schedule | M4 | Set voting date |
+| GET | /api/admin/schedule | M4 | Get schedule |
+
+---
+
+## Folder Structure (Final)
+
+```
+project/
+├── Backend/
+│   ├── app.py
+│   ├── config.py
+│   ├── .env
+│   ├── requirements.txt
+│   ├── fingerprint.py          ← FP matching engine
+│   └── routes/
+│       ├── __init__.py
+│       ├── auth.py             ← register, login, logout
+│       ├── vote.py             ← cast vote
+│       ├── result.py           ← results, stats
+│       ├── admin.py            ← admin all routes
+│       └── fp.py               ← fingerprint verify route
+│
+└── Frontend/
+    ├── index.html
+    ├── register.html
+    ├── login.html
+    ├── vote.html
+    ├── result.html
+    ├── style.css
+    ├── script.js
+    └── admin/
+        ├── index.html
+        ├── candidates.html
+        ├── voters.html
+        ├── schedule.html
+        └── admin.js
+```
+
+---
+
+*Total Modules: 8 | Estimated order: M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8*

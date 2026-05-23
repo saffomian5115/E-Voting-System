@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP Engine Test — E-Voting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg       : #050c18;
+      --surface  : #0a1628;
+      --border   : rgba(0,234,255,.15);
+      --cyan     : #00eaff;
+      --green    : #00ff88;
+      --red      : #ff4466;
+      --text     : rgba(255,255,255,.85);
+      --muted    : rgba(255,255,255,.4);
+    }
+
+    body {
+      background : var(--bg);
+      color      : var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      min-height : 100vh;
+      display    : flex;
+      flex-direction: column;
+      align-items: center;
+      padding    : 2rem 1rem;
+    }
+
+    h1 {
+      font-family : 'Orbitron', sans-serif;
+      font-size   : 1.4rem;
+      color       : var(--cyan);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: .3rem;
+    }
+    .subtitle { color: var(--muted); font-size: .8rem; margin-bottom: 2rem; }
+
+    /* Grid */
+    .grid {
+      display              : grid;
+      grid-template-columns: 1fr 1fr;
+      gap                  : 1.5rem;
+      width                : 100%;
+      max-width            : 820px;
+    }
+    @media(max-width:600px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background   : var(--surface);
+      border       : 1px solid var(--border);
+      border-radius: 12px;
+      padding      : 1.5rem;
+    }
+    .card h2 {
+      font-family   : 'Orbitron', sans-serif;
+      font-size     : .75rem;
+      letter-spacing: .12em;
+      color         : var(--cyan);
+      margin-bottom : 1rem;
+      text-transform: uppercase;
+    }
+
+    /* Status badge */
+    .badge {
+      display      : inline-flex;
+      align-items  : center;
+      gap          : .4rem;
+      padding      : .3rem .8rem;
+      border-radius: 20px;
+      font-size    : .75rem;
+      font-weight  : 600;
+      border       : 1px solid;
+    }
+    .badge.green { color: var(--green); border-color: rgba(0,255,136,.3); background: rgba(0,255,136,.07); }
+    .badge.red   { color: var(--red);   border-color: rgba(255,68,102,.3); background: rgba(255,68,102,.07); }
+    .badge.cyan  { color: var(--cyan);  border-color: rgba(0,234,255,.3);  background: rgba(0,234,255,.07); }
+
+    /* Log console */
+    .log-box {
+      background   : rgba(0,0,0,.4);
+      border       : 1px solid var(--border);
+      border-radius: 8px;
+      padding      : 1rem;
+      font-size    : .78rem;
+      line-height  : 1.6;
+      min-height   : 140px;
+      max-height   : 220px;
+      overflow-y   : auto;
+      color        : var(--muted);
+    }
+    .log-box .log-line { margin-bottom: .2rem; }
+    .log-box .ok  { color: var(--green); }
+    .log-box .err { color: var(--red); }
+    .log-box .inf { color: var(--cyan); }
+
+    /* Test buttons */
+    .test-btn {
+      padding      : .5rem 1rem;
+      border-radius: 6px;
+      border       : 1px solid var(--border);
+      background   : rgba(0,234,255,.06);
+      color        : var(--cyan);
+      font-family  : 'Share Tech Mono', monospace;
+      font-size    : .78rem;
+      cursor       : pointer;
+      transition   : background .2s;
+      margin-top   : .6rem;
+      width        : 100%;
+    }
+    .test-btn:hover { background: rgba(0,234,255,.14); }
+
+    /* Template preview */
+    .template-preview {
+      word-break   : break-all;
+      font-size    : .65rem;
+      color        : var(--muted);
+      background   : rgba(0,0,0,.3);
+      border-radius: 6px;
+      padding      : .6rem;
+      margin-top   : .8rem;
+      min-height   : 40px;
+      border       : 1px solid var(--border);
+    }
+
+    .divider {
+      width        : 100%;
+      max-width    : 820px;
+      border       : none;
+      border-top   : 1px solid var(--border);
+      margin       : 1.5rem 0;
+    }
+
+    footer {
+      color    : var(--muted);
+      font-size: .7rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fingerprint Engine</h1>
+  <p class="subtitle">Module 2 — Test & Diagnostics Page</p>
+
+  <div class="grid">
+
+    <!-- Scanner Panel -->
+    <div class="card">
+      <h2>Live Scanner</h2>
+      <div id="fp-container"></div>
+    </div>
+
+    <!-- Diagnostics Panel -->
+    <div class="card">
+      <h2>Diagnostics</h2>
+
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem;">
+        <div id="bwapi-badge" class="badge cyan">⟳ BWAPI check kar raha hai...</div>
+        <div id="backend-badge" class="badge cyan">⟳ Backend check...</div>
+      </div>
+
+      <div class="log-box" id="log-box">
+        <div class="log-line inf">[INIT] Page load ho gayi — scan test karo</div>
+      </div>
+
+      <button class="test-btn" onclick="pingBWAPI()">🔍 BWAPI Ping Test</button>
+      <button class="test-btn" onclick="pingBackend()">🔍 Backend Ping Test</button>
+      <button class="test-btn" onclick="testCapture()">📡 Capture + Template Check</button>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- Template Output -->
+  <div style="width:100%;max-width:820px">
+    <div class="card">
+      <h2>Captured Template (base64)</h2>
+      <div class="template-preview" id="template-output">
+        Abhi koi template nahi — pehle scan karo
+      </div>
+    </div>
+  </div>
+
+  <footer>E-Voting System · Module 2 · Dev Test Page</footer>
+
+  <!-- Load fingerprint engine -->
+  <script src="js/fingerprint.js"></script>
+  <script>
+    // ── Init Scanner ─────────────────────────────────────────────────────────
+    FingerprintScanner.init("fp-container");
+
+    // Status change sun'o
+    document.addEventListener("fp:statusChange", (e) => {
+      log(`[STATUS] ${e.detail.status}`, "inf");
+      if (e.detail.template) {
+        document.getElementById("template-output").textContent =
+          e.detail.template.slice(0, 300) + "... (" + e.detail.template.length + " chars)";
+      }
+    });
+
+    // ── Auto ping on load ─────────────────────────────────────────────────
+    window.addEventListener("load", () => {
+      pingBWAPI();
+      pingBackend();
+    });
+
+    // ── BWAPI Ping ────────────────────────────────────────────────────────
+    async function pingBWAPI() {
+      log("[TEST] BWAPI ping kar raha hoon...", "inf");
+      try {
+        const res = await fetch("http://localhost:9734", { mode: "no-cors" });
+        // no-cors means we can't read response, but no error = alive
+        setBadge("bwapi-badge", "✓ BWAPI Online", "green");
+        log("[OK] BWAPI port 9734 pe respond kar raha hai", "ok");
+      } catch(e) {
+        setBadge("bwapi-badge", "✗ BWAPI Offline", "red");
+        log("[FAIL] BWAPI nahi mili — FPWebHost.exe chal raha hai?", "err");
+      }
+    }
+
+    // ── Backend Ping ──────────────────────────────────────────────────────
+    async function pingBackend() {
+      log("[TEST] Backend ping kar raha hoon...", "inf");
+      try {
+        const res  = await fetch("http://localhost:5000/api/ping");
+        const data = await res.json();
+        setBadge("backend-badge", "✓ Backend Online", "green");
+        log(`[OK] Backend: ${data.message}`, "ok");
+      } catch(e) {
+        setBadge("backend-badge", "✗ Backend Offline", "red");
+        log("[FAIL] Backend nahi mila — python app.py chal raha hai?", "err");
+      }
+    }
+
+    // ── Capture Test ──────────────────────────────────────────────────────
+    async function testCapture() {
+      log("[TEST] Capture test shuru...", "inf");
+      try {
+        const template = await FingerprintScanner.capture();
+        log(`[OK] Template captured — length: ${template.length} chars`, "ok");
+        log(`[OK] Pehle 50 chars: ${template.slice(0,50)}...`, "ok");
+      } catch(e) {
+        log(`[ERR] Capture failed: ${e.message}`, "err");
+      }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function log(msg, cls = "") {
+      const box  = document.getElementById("log-box");
+      const line = document.createElement("div");
+      line.className = `log-line ${cls}`;
+      line.textContent = msg;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function setBadge(id, text, cls) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className   = `badge ${cls}`;
+    }
+  </script>
+</body>
+</html>

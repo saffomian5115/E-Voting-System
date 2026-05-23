@@ -6,15 +6,15 @@
 ## MODULE 1 — Project Setup & Configuration
 **Goal:** Poora environment ready karna, koi bhi module is ke bina kaam nahi karega.
 
-- [ ] Folder structure banana (Backend/, Frontend/, static/)
-- [ ] Python virtual environment setup karna
-- [ ] requirements.txt likhna (flask, flask-cors, pymongo, bcrypt, python-dateutil)
-- [ ] MongoDB local connection banana (`evoting` database)
-- [ ] config.py likhna — DB collections: voters, candidates, admin, voting_schedule
-- [ ] SGI BWAPI local service (port 9734) test karna — browser se ping karna
-- [ ] .env file banana — SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD_HASH
-- [ ] app.py main Flask entry point banana (CORS, Blueprints register)
-- [ ] MongoDB mein seed data dalna — ek test admin account
+- [✔️] Folder structure banana (Backend/, Frontend/, static/)
+- [✔️] Python virtual environment setup karna
+- [✔️] requirements.txt likhna (flask, flask-cors, pymongo, bcrypt, python-dateutil)
+- [✔️] MongoDB local connection banana (`evoting` database)
+- [✔️] config.py likhna — DB collections: voters, candidates, admin, voting_schedule
+- [✔️] SGI BWAPI local service (port 9734) test karna — browser se ping karna
+- [✔️] .env file banana — SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD_HASH
+- [✔️] app.py main Flask entry point banana (CORS, Blueprints register)
+- [✔️] MongoDB mein seed data dalna — ek test admin account
 
 ---
 
@@ -22,18 +22,18 @@
 **Goal:** SecuGen HU20 se fingerprint capture karna aur server pe match karna.
 
 ### Frontend (JS):
-- [ ] SGI BWAPI JS SDK integrate karna (FPWebHost port 9734 se connect)
-- [ ] `captureFingerprint()` function likhna — ISO template bytes return kare
-- [ ] Fingerprint status UI banana (scanning... / verified / failed)
-- [ ] Template ko base64 mein convert karke Flask ko bhejna
+- [✔️] SGI BWAPI JS SDK integrate karna (FPWebHost port 9734 se connect)
+- [✔️] `captureFingerprint()` function likhna — ISO template bytes return kare
+- [✔️] Fingerprint status UI banana (scanning... / verified / failed)
+- [✔️] Template ko base64 mein convert karke Flask ko bhejna
 
 ### Backend (Python):
-- [ ] `fingerprint.py` module banana
-- [ ] `store_template(user_id, base64_template)` function
-- [ ] `match_template(incoming_b64, stored_b64)` function
+- [✔️] `fingerprint.py` module banana
+- [✔️] `store_template(user_id, base64_template)` function
+- [✔️] `match_template(incoming_b64, stored_b64)` function
   - SecuGen SDK ya basic byte comparison use karna
-- [ ] Match score threshold set karna (e.g. score > 40 = match)
-- [ ] `/api/fp/verify` POST route banana — template lo, match karo, True/False return karo
+- [✔️] Match score threshold set karna (e.g. score > 40 = match)
+- [✔️] `/api/fp/verify` POST route banana — template lo, match karo, True/False return karo
 
 ---
 

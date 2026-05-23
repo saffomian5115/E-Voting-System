@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — E-Voting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg       : #04090f;
+      --surface  : #080f1c;
+      --surface2 : #0c1525;
+      --border   : rgba(0,234,255,.12);
+      --cyan     : #00eaff;
+      --cyan-dim : rgba(0,234,255,.7);
+      --green    : #00ff88;
+      --red      : #ff4466;
+      --amber    : #ffb300;
+      --text     : rgba(255,255,255,.88);
+      --muted    : rgba(255,255,255,.4);
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-head: 'Orbitron', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; flex-direction: column; }
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px),
+                  repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px);
+      pointer-events: none; z-index: 0;
+    }
+    nav, main, footer { position: relative; z-index: 1; }
+
+    /* Nav */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: rgba(4,9,15,.9); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; letter-spacing: .06em; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; color: var(--cyan); letter-spacing: .1em; }
+    .btn-logout { font-size: .72rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-mono); transition: color .2s, border-color .2s; }
+    .btn-logout:hover { color: var(--red); border-color: rgba(255,68,102,.4); }
+
+    /* Login overlay */
+    #login-overlay {
+      position: fixed; inset: 0; background: var(--bg); z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px; animation: fadeUp .4s ease; }
+    .login-title { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
+    .login-sub { font-size: .72rem; color: var(--muted); margin-bottom: 2rem; }
+    .field-group { margin-bottom: 1rem; }
+    .field-group label { display: block; font-size: .68rem; color: var(--cyan-dim); letter-spacing: .1em; margin-bottom: .4rem; text-transform: uppercase; }
+    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
+    .field-group input:focus { border-color: rgba(0,234,255,.35); box-shadow: 0 0 0 3px rgba(0,234,255,.07); }
+    .field-group input::placeholder { color: var(--muted); }
+    #login-err { color: var(--red); font-size: .72rem; margin-bottom: .8rem; display: none; }
+    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
+    .btn-login:hover { background: rgba(0,234,255,.22); }
+
+    /* Main */
+    main { flex: 1; padding: 2rem 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem; display: flex; align-items: flex-start; gap: 1rem; animation: fadeUp .4s ease both; }
+    .stat-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .stat-body { flex: 1; }
+    .stat-num { font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; color: var(--cyan); letter-spacing: .05em; display: block; }
+    .stat-num.green { color: var(--green); }
+    .stat-num.amber { color: var(--amber); }
+    .stat-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+
+    /* Main grid */
+    .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
+    @media(max-width:900px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; animation: fadeUp .4s ease both; }
+    .card-header { font-family: var(--font-head); font-size: .7rem; letter-spacing: .14em; color: var(--cyan-dim); text-transform: uppercase; margin-bottom: 1.2rem; padding-bottom: .7rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Chart */
+    .chart-wrap { height: 240px; position: relative; }
+
+    /* Top candidates */
+    .candidate-rank { display: flex; flex-direction: column; gap: .7rem; margin-top: .5rem; }
+    .rank-row { display: flex; align-items: center; gap: .8rem; padding: .7rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+    .rank-pos { font-family: var(--font-head); font-size: .65rem; color: var(--muted); width: 20px; }
+    .rank-symbol { font-size: 1.2rem; }
+    .rank-info { flex: 1; }
+    .rank-name  { font-size: .78rem; color: var(--text); }
+    .rank-party { font-size: .65rem; color: var(--muted); }
+    .rank-bar { flex: 1; }
+    .rank-bar-track { height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+    .rank-bar-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width .8s ease; }
+    .rank-votes { font-family: var(--font-head); font-size: .78rem; color: var(--text); }
+
+    /* Quick actions */
+    .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .action-btn {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      padding: 1.2rem .8rem; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--surface2); cursor: pointer; text-decoration: none;
+      transition: border-color .2s, transform .2s, background .2s;
+    }
+    .action-btn:hover { border-color: rgba(0,234,255,.3); transform: translateY(-2px); background: rgba(0,234,255,.04); }
+    .action-btn .act-icon { font-size: 1.5rem; }
+    .action-btn .act-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; text-align: center; }
+
+    /* Schedule status */
+    .schedule-box { padding: 1rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); font-size: .75rem; }
+    .schedule-box .sch-row { display: flex; justify-content: space-between; margin-bottom: .4rem; }
+    .sch-key { color: var(--muted); }
+    .sch-val { color: var(--text); }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: .4rem; }
+    .status-dot.green { background: var(--green); animation: pulse 2s infinite; }
+    .status-dot.amber { background: var(--amber); }
+    .status-dot.red   { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    footer { text-align: center; padding: 1.2rem; color: var(--muted); font-size: .7rem; border-top: 1px solid var(--border); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.6rem; font-size: .82rem; min-width: 260px; text-align: center; transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s; opacity: 0; z-index: 999; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.ok   { border-color: rgba(0,255,136,.4); color: var(--green); }
+    #toast.err  { border-color: rgba(255,68,102,.4); color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- Admin Login Overlay -->
+<div id="login-overlay">
+  <div class="login-box">
+    <p class="login-title">Admin Login</p>
+    <p class="login-sub">E-Voting System Control Panel</p>
+    <div class="field-group">
+      <label>Username</label>
+      <input type="text" id="adm-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Password</label>
+      <input type="password" id="adm-pass" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') adminLogin()">
+    </div>
+    <div id="login-err"></div>
+    <button class="btn-login" onclick="adminLogin()">Login Karo</button>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav>
+  <a class="nav-logo" href="index.html">E<span>·</span>VOTE <span style="font-size:.65rem;color:var(--amber)">ADMIN</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Dashboard</a>
+    <a href="candidates.html">Candidates</a>
+    <a href="voters.html">Voters</a>
+    <a href="schedule.html">Schedule</a>
+    <span class="admin-badge" id="admin-name">Admin</span>
+    <button class="btn-logout" onclick="adminLogout()">Logout</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card" style="animation-delay:.0s">
+      <span class="stat-icon">👥</span>
+      <div class="stat-body">
+        <span class="stat-num" id="s-total">--</span>
+        <span class="stat-label">Total Voters</span>
+      </div>
+    </div>
+    <div class="stat-card" style="animation-delay:.06s">
+      <span class="stat-icon">✅</span>
+      <div class="stat-body">
+        <span class="stat-num green" id="s-voted">--</span>
+        <span class="stat-label">Votes Cast</span>
+      </div>
+    </div>
+    <div class="stat-card" style="animation-delay:.12s">
+      <span class="stat-icon">⏳</span>
+      <div class="stat-body">
+        <span class="stat-num" id="s-not">--</span>
+        <span class="stat-label">Pending</span>
+      </div>
+    </div>
+    <div class="stat-card" style="animation-delay:.18s">
+      <span class="stat-icon">📊</span>
+      <div class="stat-body">
+        <span class="stat-num amber" id="s-turnout">--%</span>
+        <span class="stat-label">Turnout</span>
+      </div>
+    </div>
+    <div class="stat-card" style="animation-delay:.24s">
+      <span class="stat-icon">🗳️</span>
+      <div class="stat-body">
+        <span class="stat-num" id="s-cands">--</span>
+        <span class="stat-label">Candidates</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- Left: Chart + Candidate Rankings -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+      <div class="card">
+        <div class="card-header">
+          <span>Vote Distribution</span>
+          <span id="vote-status-label" style="font-size:.65rem;color:var(--muted)"></span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="pie-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Candidate Rankings</div>
+        <div class="candidate-rank" id="rank-list">
+          <div style="color:var(--muted);font-size:.75rem;text-align:center;padding:1rem">Loading...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Quick actions + Schedule -->
+    <div style="display:flex;flex-direction:column;gap:1rem;position:sticky;top:80px">
+
+      <div class="card">
+        <div class="card-header">Quick Actions</div>
+        <div class="actions-grid">
+          <a href="candidates.html" class="action-btn">
+            <span class="act-icon">👤</span>
+            <span class="act-label">Candidates</span>
+          </a>
+          <a href="voters.html" class="action-btn">
+            <span class="act-icon">📋</span>
+            <span class="act-label">Voters List</span>
+          </a>
+          <a href="schedule.html" class="action-btn">
+            <span class="act-icon">⏰</span>
+            <span class="act-label">Schedule</span>
+          </a>
+          <a href="../result.html" target="_blank" class="action-btn">
+            <span class="act-icon">📊</span>
+            <span class="act-label">Live Results</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Voting Status</div>
+        <div id="schedule-box" class="schedule-box">
+          <div style="color:var(--muted);font-size:.75rem">Loading...</div>
+        </div>
+        <div style="margin-top:1rem">
+          <button onclick="confirmReset()" style="width:100%;padding:.6rem;border-radius:6px;border:1px solid rgba(255,68,102,.3);background:rgba(255,68,102,.06);color:var(--red);font-family:var(--font-mono);font-size:.72rem;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(255,68,102,.12)'" onmouseout="this.style.background='rgba(255,68,102,.06)'">
+            ⚠ Sab Votes Reset Karo
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>© 2025 E-Voting System · Admin Panel</footer>
+<div id="toast"></div>
+
+<script>
+  const API = "http://localhost:5000/api";
+  let pieChart = null;
+  const COLORS = ["#00eaff","#00ff88","#ffb300","#ff6b9d","#a78bfa","#fb923c"];
+  const SYMBOL_MAP = {bat:"🏏",arrow:"🏹",book:"📚",lion:"🦁",tiger:"🐯",star:"⭐",flag:"🚩",torch:"🔦",key:"🗝️",scale:"⚖️"};
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  async function checkAdminSession() {
+    try {
+      const res = await fetch(`${API}/admin/me`, { credentials: "include" });
+      if (res.ok) {
+        const d = await res.json();
+        document.getElementById("login-overlay").style.display = "none";
+        document.getElementById("admin-name").textContent = d.username;
+        loadDashboard();
+        setInterval(loadDashboard, 10000);
+      }
+    } catch(e) { /* show login */ }
+  }
+
+  async function adminLogin() {
+    const user = document.getElementById("adm-user").value.trim();
+    const pass = document.getElementById("adm-pass").value;
+    const errEl = document.getElementById("login-err");
+    errEl.style.display = "none";
+
+    if (!user || !pass) { errEl.textContent = "Username aur password dono chahiye"; errEl.style.display = "block"; return; }
+
+    try {
+      const res  = await fetch(`${API}/admin/login`, {
+        method: "POST", credentials: "include",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ username: user, password: pass })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById("login-overlay").style.display = "none";
+        document.getElementById("admin-name").textContent = data.username;
+        loadDashboard();
+        setInterval(loadDashboard, 10000);
+      } else {
+        errEl.textContent = data.error || "Login fail";
+        errEl.style.display = "block";
+      }
+    } catch(e) {
+      errEl.textContent = "Server se connection nahi";
+      errEl.style.display = "block";
+    }
+  }
+
+  async function adminLogout() {
+    await fetch(`${API}/admin/logout`, { credentials: "include" });
+    location.reload();
+  }
+
+  // ── Dashboard ─────────────────────────────────────────────────────────────
+  async function loadDashboard() {
+    try {
+      const [sRes, cRes] = await Promise.all([
+        fetch(`${API}/admin/stats`,      { credentials: "include" }),
+        fetch(`${API}/admin/candidates`, { credentials: "include" }),
+      ]);
+      const stats = await sRes.json();
+      const cands = await cRes.json();
+
+      // Stats
+      setText("s-total",   stats.total_voters);
+      setText("s-voted",   stats.total_voted);
+      setText("s-not",     stats.not_voted);
+      setText("s-turnout", stats.turnout_percent + "%");
+      setText("s-cands",   stats.total_candidates);
+
+      // Schedule box
+      renderScheduleBox(stats);
+
+      // Candidates chart + ranking
+      if (cands.candidates) {
+        renderChart(cands.candidates);
+        renderRankings(cands.candidates);
+      }
+
+    } catch(e) {
+      showToast("Data load nahi hua", "err");
+    }
+  }
+
+  function renderScheduleBox(stats) {
+    const box = document.getElementById("schedule-box");
+    const s   = stats.schedule;
+    if (!s) {
+      box.innerHTML = `<div style="color:var(--amber);font-size:.75rem">⚠ Schedule set nahi hua — <a href="schedule.html" style="color:var(--cyan)">Set karo</a></div>`;
+      return;
+    }
+    const dotCls = s.is_active ? "green" : s.is_past ? "red" : "amber";
+    const status = s.is_active ? "Active" : s.is_past ? "Khatam" : "Abhi Shuru Nahi";
+    box.innerHTML = `
+      <div class="sch-row"><span class="sch-key">Status</span><span class="sch-val"><span class="status-dot ${dotCls}"></span>${status}</span></div>
+      <div class="sch-row"><span class="sch-key">Start</span><span class="sch-val">${fmtDate(s.start)}</span></div>
+      <div class="sch-row"><span class="sch-key">End</span><span class="sch-val">${fmtDate(s.end)}</span></div>
+      <div class="sch-row"><span class="sch-key">Turnout</span><span class="sch-val" style="color:var(--green)">${stats.turnout_percent}%</span></div>
+    `;
+
+    document.getElementById("vote-status-label").textContent = s.is_active ? "🟢 Live" : "⚪ Inactive";
+  }
+
+  function renderChart(candidates) {
+    const sorted = [...candidates].sort((a,b) => b.votes - a.votes);
+    const labels = sorted.map(c => c.name);
+    const votes  = sorted.map(c => c.votes);
+    const colors = sorted.map((_,i) => COLORS[i % COLORS.length]);
+
+    if (!pieChart) {
+      const ctx = document.getElementById("pie-chart").getContext("2d");
+      pieChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [{
+            data: votes,
+            backgroundColor: colors.map(c => c + "44"),
+            borderColor: colors,
+            borderWidth: 2,
+            hoverOffset: 8,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "rgba(255,255,255,.55)", font: { family: "Share Tech Mono", size: 11 }, padding: 16 }
+            }
+          },
+          cutout: "60%",
+        }
+      });
+    } else {
+      pieChart.data.labels = labels;
+      pieChart.data.datasets[0].data = votes;
+      pieChart.update();
+    }
+  }
+
+  function renderRankings(candidates) {
+    const sorted = [...candidates].sort((a,b) => b.votes - a.votes);
+    const total  = sorted.reduce((s,c) => s + c.votes, 0);
+    const list   = document.getElementById("rank-list");
+
+    if (sorted.length === 0) {
+      list.innerHTML = `<div style="color:var(--muted);font-size:.75rem;text-align:center;padding:1rem">Koi candidate nahi</div>`;
+      return;
+    }
+
+    list.innerHTML = sorted.map((c, i) => {
+      const pct = total > 0 ? Math.round((c.votes / total) * 100) : 0;
+      const sym = SYMBOL_MAP[c.symbol?.toLowerCase()] || "🗳️";
+      return `
+        <div class="rank-row">
+          <span class="rank-pos">${i === 0 ? "🥇" : "#"+(i+1)}</span>
+          <span class="rank-symbol">${sym}</span>
+          <div class="rank-info">
+            <div class="rank-name">${c.name}</div>
+            <div class="rank-party">${c.party}</div>
+          </div>
+          <div class="rank-bar">
+            <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${pct}%;background:${COLORS[i%COLORS.length]}"></div></div>
+          </div>
+          <span class="rank-votes">${c.votes}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  async function confirmReset() {
+    const word = prompt('Sab votes reset karne ke liye "RESET" type karo:');
+    if (word !== "RESET") { showToast("Reset cancel ho gaya", "err"); return; }
+
+    try {
+      const res  = await fetch(`${API}/admin/reset`, {
+        method: "POST", credentials: "include",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ confirm: "RESET" })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`✓ ${data.message}`, "ok");
+        setTimeout(loadDashboard, 1000);
+      } else {
+        showToast(data.error || "Reset fail", "err");
+      }
+    } catch(e) {
+      showToast("Server error", "err");
+    }
+  }
+
+  function setText(id, v) { const el = document.getElementById(id); if(el) el.textContent = v ?? "--"; }
+  function fmtDate(iso) { if(!iso) return "--"; return new Date(iso).toLocaleString("en-PK", {dateStyle:"medium",timeStyle:"short"}); }
+
+  let _tt = null;
+  function showToast(msg, type="ok") {
+    const el = document.getElementById("toast");
+    el.textContent = msg; el.className = `show ${type}`;
+    clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove("show"), 3500);
+  }
+
+  checkAdminSession();
+</script>
+</body>
+</html>

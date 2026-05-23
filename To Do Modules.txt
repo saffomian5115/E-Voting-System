@@ -41,25 +41,25 @@
 **Goal:** Voter registration aur login with fingerprint + password dono required.
 
 ### Register:
-- [ ] `POST /api/register` route
+- [✔️] `POST /api/register` route
   - Fields: name, age, gender, CNIC, email, password, address, fp_template
   - CNIC unique check karna
   - Email unique check karna
   - Password bcrypt se hash karna
   - fp_template base64 store karna
   - hasVoted: False set karna
-- [ ] Register page UI — Left: form fields | Arrow | Right: fingerprint scan
-- [ ] Validation — sab fields required, CNIC format check
+- [✔️] Register page UI — Left: form fields | Arrow | Right: fingerprint scan
+- [✔️] Validation — sab fields required, CNIC format check
 
 ### Login:
-- [ ] `POST /api/login` route
+- [✔️] `POST /api/login` route
   - Email + password check (bcrypt compare)
   - Fingerprint template match karna
   - Dono pass ho tabhie login ho
   - Session mein voter_id store karna
-- [ ] Login page UI — Email/Password + Fingerprint scan
-- [ ] Session management — Flask session ya JWT token
-- [ ] Logout route `GET /api/logout`
+- [✔️] Login page UI — Email/Password + Fingerprint scan
+- [✔️] Session management — Flask session ya JWT token
+- [✔️] Logout route `GET /api/logout`
 
 ---
 

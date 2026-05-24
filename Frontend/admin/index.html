@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard — E-Voting</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,10 +23,11 @@
       --amber    : #ffb300;
       --text     : rgba(255,255,255,.88);
       --muted    : rgba(255,255,255,.4);
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-head: 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; flex-direction: column; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; font-weight: 400; -webkit-font-smoothing: antialiased; }
     body::before {
       content: ""; position: fixed; inset: 0;
       background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px),
@@ -35,13 +38,13 @@
 
     /* Nav */
     nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: rgba(4,9,15,.9); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
-    .nav-logo { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
+    .nav-logo { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
     .nav-logo span { color: var(--text); }
     .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; letter-spacing: .06em; transition: color .2s; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; font-weight: 500; letter-spacing: .06em; transition: color .2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
-    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; color: var(--cyan); letter-spacing: .1em; }
-    .btn-logout { font-size: .72rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-mono); transition: color .2s, border-color .2s; }
+    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; font-weight: 500; color: var(--cyan); letter-spacing: .1em; }
+    .btn-logout { font-size: .72rem; font-weight: 500; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-body); transition: color .2s, border-color .2s; }
     .btn-logout:hover { color: var(--red); border-color: rgba(255,68,102,.4); }
 
     /* Login overlay */
@@ -50,15 +53,15 @@
       display: flex; align-items: center; justify-content: center;
     }
     .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px; animation: fadeUp .4s ease; }
-    .login-title { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
+    .login-title { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
     .login-sub { font-size: .72rem; color: var(--muted); margin-bottom: 2rem; }
     .field-group { margin-bottom: 1rem; }
-    .field-group label { display: block; font-size: .68rem; color: var(--cyan-dim); letter-spacing: .1em; margin-bottom: .4rem; text-transform: uppercase; }
-    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
+    .field-group label { display: block; font-size: .68rem; font-weight: 500; color: var(--cyan-dim); letter-spacing: .1em; margin-bottom: .4rem; text-transform: uppercase; }
+    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-body); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
     .field-group input:focus { border-color: rgba(0,234,255,.35); box-shadow: 0 0 0 3px rgba(0,234,255,.07); }
     .field-group input::placeholder { color: var(--muted); }
     #login-err { color: var(--red); font-size: .72rem; margin-bottom: .8rem; display: none; }
-    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
+    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
     .btn-login:hover { background: rgba(0,234,255,.22); }
 
     /* Main */
@@ -72,14 +75,14 @@
     .stat-num { font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; color: var(--cyan); letter-spacing: .05em; display: block; }
     .stat-num.green { color: var(--green); }
     .stat-num.amber { color: var(--amber); }
-    .stat-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .stat-label { font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
 
     /* Main grid */
     .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
     @media(max-width:900px) { .main-grid { grid-template-columns: 1fr; } }
 
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; animation: fadeUp .4s ease both; }
-    .card-header { font-family: var(--font-head); font-size: .7rem; letter-spacing: .14em; color: var(--cyan-dim); text-transform: uppercase; margin-bottom: 1.2rem; padding-bottom: .7rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .card-header { font-family: var(--font-head); font-size: .7rem; font-weight: 600; letter-spacing: .14em; color: var(--cyan-dim); text-transform: uppercase; margin-bottom: 1.2rem; padding-bottom: .7rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 
     /* Chart */
     .chart-wrap { height: 240px; position: relative; }
@@ -87,15 +90,15 @@
     /* Top candidates */
     .candidate-rank { display: flex; flex-direction: column; gap: .7rem; margin-top: .5rem; }
     .rank-row { display: flex; align-items: center; gap: .8rem; padding: .7rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
-    .rank-pos { font-family: var(--font-head); font-size: .65rem; color: var(--muted); width: 20px; }
+    .rank-pos { font-family: var(--font-head); font-size: .65rem; font-weight: 600; color: var(--muted); width: 20px; }
     .rank-symbol { font-size: 1.2rem; }
     .rank-info { flex: 1; }
-    .rank-name  { font-size: .78rem; color: var(--text); }
+    .rank-name  { font-size: .78rem; font-weight: 500; color: var(--text); }
     .rank-party { font-size: .65rem; color: var(--muted); }
     .rank-bar { flex: 1; }
     .rank-bar-track { height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
     .rank-bar-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width .8s ease; }
-    .rank-votes { font-family: var(--font-head); font-size: .78rem; color: var(--text); }
+    .rank-votes { font-family: var(--font-head); font-size: .78rem; font-weight: 600; color: var(--text); }
 
     /* Quick actions */
     .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
@@ -107,7 +110,7 @@
     }
     .action-btn:hover { border-color: rgba(0,234,255,.3); transform: translateY(-2px); background: rgba(0,234,255,.04); }
     .action-btn .act-icon { font-size: 1.5rem; }
-    .action-btn .act-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; text-align: center; }
+    .action-btn .act-label { font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; text-align: center; }
 
     /* Schedule status */
     .schedule-box { padding: 1rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); font-size: .75rem; }
@@ -147,7 +150,7 @@
              onkeydown="if(event.key==='Enter') adminLogin()">
     </div>
     <div id="login-err"></div>
-    <button class="btn-login" onclick="adminLogin()">Login Karo</button>
+    <button class="btn-login" onclick="adminLogin()">Login</button>
   </div>
 </div>
 
@@ -260,8 +263,8 @@
           <div style="color:var(--muted);font-size:.75rem">Loading...</div>
         </div>
         <div style="margin-top:1rem">
-          <button onclick="confirmReset()" style="width:100%;padding:.6rem;border-radius:6px;border:1px solid rgba(255,68,102,.3);background:rgba(255,68,102,.06);color:var(--red);font-family:var(--font-mono);font-size:.72rem;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(255,68,102,.12)'" onmouseout="this.style.background='rgba(255,68,102,.06)'">
-            ⚠ Sab Votes Reset Karo
+          <button onclick="confirmReset()" style="width:100%;padding:.6rem;border-radius:6px;border:1px solid rgba(255,68,102,.3);background:rgba(255,68,102,.06);color:var(--red);font-family:var(--font-body);font-size:.72rem;font-weight:500;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(255,68,102,.12)'" onmouseout="this.style.background='rgba(255,68,102,.06)'">
+            ⚠ Reset All Votes
           </button>
         </div>
       </div>
@@ -300,7 +303,7 @@
     const errEl = document.getElementById("login-err");
     errEl.style.display = "none";
 
-    if (!user || !pass) { errEl.textContent = "Username aur password dono chahiye"; errEl.style.display = "block"; return; }
+    if (!user || !pass) { errEl.textContent = "Username and password are required"; errEl.style.display = "block"; return; }
 
     try {
       const res  = await fetch(`${API}/admin/login`, {
@@ -315,11 +318,11 @@
         loadDashboard();
         setInterval(loadDashboard, 10000);
       } else {
-        errEl.textContent = data.error || "Login fail";
+        errEl.textContent = data.error || "Login failed";
         errEl.style.display = "block";
       }
     } catch(e) {
-      errEl.textContent = "Server se connection nahi";
+      errEl.textContent = "Cannot connect to server";
       errEl.style.display = "block";
     }
   }
@@ -356,7 +359,7 @@
       }
 
     } catch(e) {
-      showToast("Data load nahi hua", "err");
+      showToast("Failed to load data", "err");
     }
   }
 
@@ -364,11 +367,11 @@
     const box = document.getElementById("schedule-box");
     const s   = stats.schedule;
     if (!s) {
-      box.innerHTML = `<div style="color:var(--amber);font-size:.75rem">⚠ Schedule set nahi hua — <a href="schedule.html" style="color:var(--cyan)">Set karo</a></div>`;
+      box.innerHTML = `<div style="color:var(--amber);font-size:.75rem">⚠ Schedule not set — <a href="schedule.html" style="color:var(--cyan)">Set Now</a></div>`;
       return;
     }
     const dotCls = s.is_active ? "green" : s.is_past ? "red" : "amber";
-    const status = s.is_active ? "Active" : s.is_past ? "Khatam" : "Abhi Shuru Nahi";
+    const status = s.is_active ? "Active" : s.is_past ? "Ended" : "Not Started Yet";
     box.innerHTML = `
       <div class="sch-row"><span class="sch-key">Status</span><span class="sch-val"><span class="status-dot ${dotCls}"></span>${status}</span></div>
       <div class="sch-row"><span class="sch-key">Start</span><span class="sch-val">${fmtDate(s.start)}</span></div>
@@ -404,7 +407,7 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              labels: { color: "rgba(255,255,255,.55)", font: { family: "Share Tech Mono", size: 11 }, padding: 16 }
+              labels: { color: "rgba(255,255,255,.55)", font: { family: "Inter", size: 11 }, padding: 16 }
             }
           },
           cutout: "60%",
@@ -423,7 +426,7 @@
     const list   = document.getElementById("rank-list");
 
     if (sorted.length === 0) {
-      list.innerHTML = `<div style="color:var(--muted);font-size:.75rem;text-align:center;padding:1rem">Koi candidate nahi</div>`;
+      list.innerHTML = `<div style="color:var(--muted);font-size:.75rem;text-align:center;padding:1rem">No candidates yet</div>`;
       return;
     }
 
@@ -448,8 +451,8 @@
   }
 
   async function confirmReset() {
-    const word = prompt('Sab votes reset karne ke liye "RESET" type karo:');
-    if (word !== "RESET") { showToast("Reset cancel ho gaya", "err"); return; }
+    const word = prompt('Type "RESET" to reset all votes:');
+    if (word !== "RESET") { showToast("Reset cancelled", "err"); return; }
 
     try {
       const res  = await fetch(`${API}/admin/reset`, {
@@ -462,7 +465,7 @@
         showToast(`✓ ${data.message}`, "ok");
         setTimeout(loadDashboard, 1000);
       } else {
-        showToast(data.error || "Reset fail", "err");
+        showToast(data.error || "Reset failed", "err");
       }
     } catch(e) {
       showToast("Server error", "err");
@@ -470,7 +473,7 @@
   }
 
   function setText(id, v) { const el = document.getElementById(id); if(el) el.textContent = v ?? "--"; }
-  function fmtDate(iso) { if(!iso) return "--"; return new Date(iso).toLocaleString("en-PK", {dateStyle:"medium",timeStyle:"short"}); }
+  function fmtDate(iso) { if(!iso) return "--"; return new Date(iso).toLocaleString(undefined, {dateStyle:"medium",timeStyle:"short"}); }
 
   let _tt = null;
   function showToast(msg, type="ok") {

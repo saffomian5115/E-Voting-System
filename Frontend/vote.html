@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vote Karo — E-Voting System</title>
+  <title>Cast Vote — E-Voting System</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,17 +24,20 @@
       --amber     : #ffb300;
       --text      : rgba(255,255,255,.88);
       --muted     : rgba(255,255,255,.4);
-      --font-mono : 'Share Tech Mono', monospace;
-      --font-head : 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body : 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head : 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
 
     body {
       background : var(--bg);
       color      : var(--text);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       min-height : 100vh;
       display    : flex;
       flex-direction: column;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
     }
 
     body::before {
@@ -65,6 +70,7 @@
     .nav-logo {
       font-family   : var(--font-head);
       font-size     : .9rem;
+      font-weight   : 600;
       color         : var(--cyan);
       letter-spacing: .18em;
       text-decoration: none;
@@ -73,18 +79,20 @@
     .nav-right { display: flex; align-items: center; gap: 1.5rem; }
     .nav-voter-name {
       font-size    : .75rem;
+      font-weight  : 500;
       color        : var(--cyan-dim);
       letter-spacing: .06em;
     }
     .btn-logout {
       font-size    : .72rem;
+      font-weight  : 500;
       color        : var(--muted);
       background   : none;
       border       : 1px solid var(--border);
       border-radius: 5px;
       padding      : .3rem .8rem;
       cursor       : pointer;
-      font-family  : var(--font-mono);
+      font-family  : var(--font-body);
       transition   : color .2s, border-color .2s;
     }
     .btn-logout:hover { color: var(--red); border-color: rgba(255,68,102,.4); }
@@ -111,6 +119,7 @@
     .page-title {
       font-family   : var(--font-head);
       font-size     : 1rem;
+      font-weight   : 600;
       letter-spacing: .18em;
       color         : var(--cyan);
       text-transform: uppercase;
@@ -237,6 +246,7 @@
     .card-name {
       font-family   : var(--font-head);
       font-size     : .82rem;
+      font-weight   : 600;
       letter-spacing: .1em;
       color         : var(--text);
       margin-bottom : .3rem;
@@ -281,6 +291,7 @@
     .sidebar-title {
       font-family   : var(--font-head);
       font-size     : .65rem;
+      font-weight   : 600;
       letter-spacing: .14em;
       color         : var(--cyan-dim);
       text-transform: uppercase;
@@ -300,7 +311,7 @@
     }
     #selected-preview.empty { justify-content: center; color: var(--muted); font-size: .75rem; }
     #preview-symbol { font-size: 2rem; }
-    #preview-name   { font-family: var(--font-head); font-size: .75rem; color: var(--text); letter-spacing: .1em; }
+    #preview-name   { font-family: var(--font-head); font-size: .75rem; font-weight: 600; color: var(--text); letter-spacing: .1em; }
     #preview-party  { font-size: .7rem; color: var(--cyan-dim); }
 
     /* Location */
@@ -321,8 +332,9 @@
       border       : 1px solid var(--border);
       background   : rgba(0,234,255,.04);
       color        : var(--muted);
-      font-family  : var(--font-mono);
+      font-family  : var(--font-body);
       font-size    : .72rem;
+      font-weight  : 500;
       cursor       : pointer;
       transition   : all .2s;
       display      : flex;
@@ -348,6 +360,7 @@
       color        : var(--cyan);
       font-family  : var(--font-head);
       font-size    : .78rem;
+      font-weight  : 600;
       letter-spacing: .15em;
       text-transform: uppercase;
       cursor       : pointer;
@@ -384,6 +397,7 @@
     #voted-panel h2 {
       font-family: var(--font-head);
       font-size: 1rem;
+      font-weight: 600;
       color: var(--green);
       letter-spacing: .15em;
       margin-bottom: .6rem;
@@ -398,6 +412,7 @@
       color        : var(--green);
       font-family  : var(--font-head);
       font-size    : .75rem;
+      font-weight  : 600;
       letter-spacing: .15em;
       text-decoration: none;
       text-transform: uppercase;
@@ -441,6 +456,7 @@
     .success-title {
       font-family  : var(--font-head);
       font-size    : 1.2rem;
+      font-weight  : 600;
       color        : var(--green);
       letter-spacing: .15em;
     }
@@ -488,7 +504,7 @@
 <nav>
   <a class="nav-logo" href="index.html">E<span>·</span>VOTE</a>
   <div class="nav-right">
-    <span class="nav-voter-name" id="voter-greeting">Khush amdeed...</span>
+    <span class="nav-voter-name" id="voter-greeting">Welcome...</span>
     <button class="btn-logout" onclick="logoutUser()">Logout</button>
   </div>
 </nav>
@@ -499,23 +515,23 @@
   <!-- Schedule Banner -->
   <div id="schedule-banner" class="inactive">
     <div class="banner-dot" id="banner-dot"></div>
-    <span id="banner-text">Schedule check kar raha hoon...</span>
+    <span id="banner-text">Checking schedule...</span>
   </div>
 
   <!-- Already Voted Panel -->
   <div id="voted-panel">
     <div class="voted-icon">✅</div>
-    <h2>Aap Vote De Chuke Hain!</h2>
-    <p>Aapka vote kamyabi se record ho gaya hai. Shukriya!</p>
-    <a href="result.html" class="btn-results">Live Results Dekho →</a>
+    <h2>You Have Already Voted!</h2>
+    <p>Your vote has been successfully recorded. Thank you!</p>
+    <a href="result.html" class="btn-results">View Live Results →</a>
   </div>
 
   <!-- Voting UI -->
   <div id="vote-ui" style="display:none">
     <div class="page-header">
       <div>
-        <p class="page-title">Vote Cast Karo</p>
-        <p class="page-sub" id="page-sub">Apna candidate choose karein aur fingerprint se confirm karein</p>
+        <p class="page-title">Cast Your Vote</p>
+        <p class="page-sub" id="page-sub">Choose your candidate and confirm with fingerprint</p>
       </div>
     </div>
 
@@ -523,7 +539,7 @@
       <!-- Left: Candidates -->
       <div>
         <div class="candidates-grid" id="candidates-grid">
-          <div class="no-candidates">Candidates load ho rahe hain...</div>
+          <div class="no-candidates">Loading candidates...</div>
         </div>
       </div>
 
@@ -534,7 +550,7 @@
         <div class="sidebar-card">
           <p class="sidebar-title">Chosen Candidate</p>
           <div id="selected-preview" class="empty">
-            <span>Koi candidate select nahi hua</span>
+            <span>No candidate selected</span>
           </div>
         </div>
 
@@ -543,10 +559,10 @@
           <p class="sidebar-title">Location</p>
           <div class="location-row">
             <span class="icon">📍</span>
-            <span id="location-status">Location capture nahi hua</span>
+            <span id="location-status">Location not captured</span>
           </div>
           <button class="btn-location" id="btn-location" onclick="captureLocation()">
-            📡 Location Allow Karo
+            📡 Allow Location
           </button>
         </div>
 
@@ -558,7 +574,7 @@
 
         <!-- Cast Vote -->
         <button class="btn-cast" id="btn-cast" onclick="castVote()" disabled>
-          <span class="btn-text">🗳️ Vote Cast Karo</span>
+          <span class="btn-text">🗳️ Cast Vote</span>
           <span class="spinner"></span>
         </button>
 
@@ -574,9 +590,9 @@
 <!-- Success Overlay -->
 <div id="success-overlay">
   <div class="success-ring">✓</div>
-  <p class="success-title">Vote Kamyab!</p>
-  <p class="success-msg" id="success-msg">Aapka vote record ho gaya.</p>
-  <a href="result.html" class="btn-results" style="margin-top:.5rem">Results Dekho →</a>
+  <p class="success-title">Vote Successful!</p>
+  <p class="success-msg" id="success-msg">Your vote has been recorded.</p>
+  <a href="result.html" class="btn-results" style="margin-top:.5rem">View Results →</a>
 </div>
 
 <script src="js/fingerprint.js"></script>
@@ -620,7 +636,7 @@
       await Promise.all([checkSchedule(true), loadCandidates()]);
 
     } catch (e) {
-      showToast("Server se connection nahi", "err");
+      showToast("Cannot connect to server", "err");
       setTimeout(() => window.location.href = "login.html", 2500);
     }
   }
@@ -638,24 +654,24 @@
       if (data.voting_active) {
         banner.className = "active";
         dot.className    = "banner-dot green";
-        const end = data.schedule ? new Date(data.schedule.end).toLocaleString("ur-PK") : "";
-        text.textContent = `✓ Voting chal rahi hai — ${end} tak`;
+        const end = data.schedule ? new Date(data.schedule.end).toLocaleString() : "";
+        text.textContent = `✓ Voting is active — until ${end}`;
       } else if (data.schedule && new Date(data.schedule.end) < new Date()) {
         banner.className = "ended";
         dot.className    = "banner-dot red";
-        text.textContent = "Voting khatam ho chuki hai";
+        text.textContent = "Voting has ended";
         if (enableVoting) disableVoting(data.reason);
       } else {
         banner.className = "inactive";
         dot.className    = "banner-dot";
-        text.textContent = data.reason || "Voting schedule set nahi hui";
+        text.textContent = data.reason || "Voting schedule not set";
         if (enableVoting) disableVoting(data.reason);
       }
     } catch(e) { /* ignore */ }
   }
 
   function disableVoting(reason) {
-    document.getElementById("page-sub").textContent = reason || "Abhi vote nahi de sakte";
+    document.getElementById("page-sub").textContent = reason || "Cannot vote at this time";
     document.getElementById("btn-cast").disabled = true;
   }
 
@@ -668,7 +684,7 @@
       const grid = document.getElementById("candidates-grid");
 
       if (!data.results || data.results.length === 0) {
-        grid.innerHTML = `<div class="no-candidates">Abhi koi candidate registered nahi — admin se rabta karo</div>`;
+        grid.innerHTML = `<div class="no-candidates">No candidates registered yet — contact admin</div>`;
         return;
       }
 
@@ -689,7 +705,7 @@
         grid.appendChild(card);
       });
     } catch(e) {
-      showToast("Candidates load nahi hue", "err");
+      showToast("Failed to load candidates", "err");
     }
   }
 
@@ -724,11 +740,11 @@
   // ── Location ──────────────────────────────────────────────────────────────
   async function captureLocation() {
     const btn = document.getElementById("btn-location");
-    btn.textContent = "⟳ Location mil rahi hai...";
+    btn.textContent = "⟳ Getting location...";
 
     if (!navigator.geolocation) {
-      document.getElementById("location-status").textContent = "Browser support nahi";
-      btn.textContent = "❌ Supported nahi";
+      document.getElementById("location-status").textContent = "Browser not supported";
+      btn.textContent = "❌ Not supported";
       return;
     }
 
@@ -760,8 +776,8 @@
 
   // ── Cast vote ─────────────────────────────────────────────────────────────
   async function castVote() {
-    if (!selectedCandidateId) { showToast("Candidate select karo", "err"); return; }
-    if (!fpReady)             { showToast("Fingerprint scan karo", "err"); return; }
+    if (!selectedCandidateId) { showToast("Please select a candidate", "err"); return; }
+    if (!fpReady)             { showToast("Please scan fingerprint", "err"); return; }
 
     const btn = document.getElementById("btn-cast");
     btn.disabled = true;
@@ -790,12 +806,12 @@
         document.getElementById("success-overlay").classList.add("show");
         setTimeout(() => window.location.href = "result.html", 5000);
       } else {
-        showToast(data.error || "Vote fail ho gaya", "err");
+        showToast(data.error || "Vote failed", "err");
         btn.disabled = false;
         btn.classList.remove("loading");
       }
     } catch(e) {
-      showToast("Server se connection nahi", "err");
+      showToast("Cannot connect to server", "err");
       btn.disabled = false;
       btn.classList.remove("loading");
     }

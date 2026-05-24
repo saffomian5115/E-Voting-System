@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FP Engine Test — E-Voting</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,22 +20,28 @@
       --red      : #ff4466;
       --text     : rgba(255,255,255,.85);
       --muted    : rgba(255,255,255,.4);
+      /* New cleaner font stack */
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
 
     body {
       background : var(--bg);
       color      : var(--text);
-      font-family: 'Share Tech Mono', monospace;
+      font-family: var(--font-body);
       min-height : 100vh;
       display    : flex;
       flex-direction: column;
       align-items: center;
       padding    : 2rem 1rem;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
     }
 
     h1 {
-      font-family : 'Orbitron', sans-serif;
+      font-family : var(--font-head);
       font-size   : 1.4rem;
+      font-weight : 600;
       color       : var(--cyan);
       letter-spacing: .15em;
       text-transform: uppercase;
@@ -58,8 +66,9 @@
       padding      : 1.5rem;
     }
     .card h2 {
-      font-family   : 'Orbitron', sans-serif;
+      font-family   : var(--font-head);
       font-size     : .75rem;
+      font-weight   : 600;
       letter-spacing: .12em;
       color         : var(--cyan);
       margin-bottom : 1rem;
@@ -74,7 +83,7 @@
       padding      : .3rem .8rem;
       border-radius: 20px;
       font-size    : .75rem;
-      font-weight  : 600;
+      font-weight  : 500;
       border       : 1px solid;
     }
     .badge.green { color: var(--green); border-color: rgba(0,255,136,.3); background: rgba(0,255,136,.07); }
@@ -106,8 +115,9 @@
       border       : 1px solid var(--border);
       background   : rgba(0,234,255,.06);
       color        : var(--cyan);
-      font-family  : 'Share Tech Mono', monospace;
+      font-family  : var(--font-body);
       font-size    : .78rem;
+      font-weight  : 500;
       cursor       : pointer;
       transition   : background .2s;
       margin-top   : .6rem;
@@ -161,12 +171,12 @@
       <h2>Diagnostics</h2>
 
       <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem;">
-        <div id="bwapi-badge" class="badge cyan">⟳ BWAPI check kar raha hai...</div>
-        <div id="backend-badge" class="badge cyan">⟳ Backend check...</div>
+        <div id="bwapi-badge" class="badge cyan">⟳ Checking BWAPI...</div>
+        <div id="backend-badge" class="badge cyan">⟳ Checking Backend...</div>
       </div>
 
       <div class="log-box" id="log-box">
-        <div class="log-line inf">[INIT] Page load ho gayi — scan test karo</div>
+        <div class="log-line inf">[INIT] Page loaded — test scanning</div>
       </div>
 
       <button class="test-btn" onclick="pingBWAPI()">🔍 BWAPI Ping Test</button>
@@ -183,7 +193,7 @@
     <div class="card">
       <h2>Captured Template (base64)</h2>
       <div class="template-preview" id="template-output">
-        Abhi koi template nahi — pehle scan karo
+        No template yet — please scan first
       </div>
     </div>
   </div>
@@ -196,7 +206,7 @@
     // ── Init Scanner ─────────────────────────────────────────────────────────
     FingerprintScanner.init("fp-container");
 
-    // Status change sun'o
+    // Listen for status changes
     document.addEventListener("fp:statusChange", (e) => {
       log(`[STATUS] ${e.detail.status}`, "inf");
       if (e.detail.template) {
@@ -213,21 +223,21 @@
 
     // ── BWAPI Ping ────────────────────────────────────────────────────────
     async function pingBWAPI() {
-      log("[TEST] BWAPI ping kar raha hoon...", "inf");
+      log("[TEST] Pinging BWAPI...", "inf");
       try {
         const res = await fetch("http://localhost:9734", { mode: "no-cors" });
         // no-cors means we can't read response, but no error = alive
         setBadge("bwapi-badge", "✓ BWAPI Online", "green");
-        log("[OK] BWAPI port 9734 pe respond kar raha hai", "ok");
+        log("[OK] BWAPI is responding on port 9734", "ok");
       } catch(e) {
         setBadge("bwapi-badge", "✗ BWAPI Offline", "red");
-        log("[FAIL] BWAPI nahi mili — FPWebHost.exe chal raha hai?", "err");
+        log("[FAIL] BWAPI not found — is FPWebHost.exe running?", "err");
       }
     }
 
     // ── Backend Ping ──────────────────────────────────────────────────────
     async function pingBackend() {
-      log("[TEST] Backend ping kar raha hoon...", "inf");
+      log("[TEST] Pinging backend...", "inf");
       try {
         const res  = await fetch("http://localhost:5000/api/ping");
         const data = await res.json();
@@ -235,17 +245,17 @@
         log(`[OK] Backend: ${data.message}`, "ok");
       } catch(e) {
         setBadge("backend-badge", "✗ Backend Offline", "red");
-        log("[FAIL] Backend nahi mila — python app.py chal raha hai?", "err");
+        log("[FAIL] Backend not found — is python app.py running?", "err");
       }
     }
 
     // ── Capture Test ──────────────────────────────────────────────────────
     async function testCapture() {
-      log("[TEST] Capture test shuru...", "inf");
+      log("[TEST] Starting capture test...", "inf");
       try {
         const template = await FingerprintScanner.capture();
         log(`[OK] Template captured — length: ${template.length} chars`, "ok");
-        log(`[OK] Pehle 50 chars: ${template.slice(0,50)}...`, "ok");
+        log(`[OK] First 50 chars: ${template.slice(0,50)}...`, "ok");
       } catch(e) {
         log(`[ERR] Capture failed: ${e.message}`, "err");
       }

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Results — E-Voting System</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +23,19 @@
       --amber    : #ffb300;
       --text     : rgba(255,255,255,.88);
       --muted    : rgba(255,255,255,.4);
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-head: 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
     body {
       background : var(--bg);
       color      : var(--text);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       min-height : 100vh;
       display    : flex;
       flex-direction: column;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
     }
     body::before {
       content : "";
@@ -58,10 +63,10 @@
       top            : 0;
       z-index        : 100;
     }
-    .nav-logo { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
+    .nav-logo { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
     .nav-logo span { color: var(--text); }
     .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .78rem; letter-spacing: .06em; transition: color .2s; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .78rem; font-weight: 500; letter-spacing: .06em; transition: color .2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
 
     main { flex: 1; padding: 2.5rem 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
@@ -76,7 +81,7 @@
       margin-bottom: 2rem;
       animation    : fadeUp .4s ease both;
     }
-    .page-title { font-family: var(--font-head); font-size: 1rem; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
+    .page-title { font-family: var(--font-head); font-size: 1rem; font-weight: 600; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
     .page-sub   { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
 
     .live-badge {
@@ -127,7 +132,7 @@
       margin-bottom : .3rem;
     }
     .stat-num.green { color: var(--green); }
-    .stat-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .stat-label { font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
 
     /* ── Content grid ────────────────────────────────────────────────────── */
     .content-grid {
@@ -149,6 +154,7 @@
     .card-title {
       font-family   : var(--font-head);
       font-size     : .7rem;
+      font-weight   : 600;
       letter-spacing: .14em;
       color         : var(--cyan-dim);
       text-transform: uppercase;
@@ -174,11 +180,11 @@
       transition   : border-color .2s;
     }
     .result-row.winner { border-color: rgba(0,255,136,.35); background: rgba(0,255,136,.04); }
-    .result-rank { font-family: var(--font-head); font-size: .65rem; color: var(--muted); width: 20px; flex-shrink: 0; }
+    .result-rank { font-family: var(--font-head); font-size: .65rem; font-weight: 600; color: var(--muted); width: 20px; flex-shrink: 0; }
     .result-rank.first { color: var(--amber); }
     .result-symbol { font-size: 1.3rem; flex-shrink: 0; }
     .result-info { flex: 1; min-width: 0; }
-    .result-name  { font-size: .8rem; color: var(--text); }
+    .result-name  { font-size: .8rem; font-weight: 500; color: var(--text); }
     .result-party { font-size: .68rem; color: var(--muted); }
     .result-bar-wrap { flex: 1; }
     .result-bar {
@@ -212,15 +218,15 @@
     /* Winner card */
     .winner-card { border-color: rgba(0,255,136,.3); background: rgba(0,255,136,.04); }
     .winner-symbol { font-size: 2.5rem; display: block; margin-bottom: .6rem; }
-    .winner-name   { font-family: var(--font-head); font-size: .85rem; color: var(--green); letter-spacing: .12em; margin-bottom: .3rem; }
+    .winner-name   { font-family: var(--font-head); font-size: .85rem; font-weight: 600; color: var(--green); letter-spacing: .12em; margin-bottom: .3rem; }
     .winner-party  { font-size: .72rem; color: var(--muted); margin-bottom: .6rem; }
-    .winner-votes  { font-family: var(--font-head); font-size: 1.2rem; color: var(--green); }
+    .winner-votes  { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--green); }
     .winner-label  { font-size: .62rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
 
     /* Gender stats */
     .gender-row { display: flex; gap: .8rem; margin-top: .8rem; }
     .gender-item { flex: 1; text-align: center; padding: .8rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
-    .gender-num  { font-family: var(--font-head); font-size: 1rem; color: var(--cyan); display: block; }
+    .gender-num  { font-family: var(--font-head); font-size: 1rem; font-weight: 600; color: var(--cyan); display: block; }
     .gender-lbl  { font-size: .62rem; color: var(--muted); }
 
     /* Not started notice */
@@ -259,11 +265,11 @@
   <div class="live-row">
     <div>
       <p class="page-title">Election Results</p>
-      <p class="page-sub">Live vote count — har 5 second mein update hota hai</p>
+      <p class="page-sub">Live vote count — updates every 5 seconds</p>
     </div>
     <div style="display:flex; flex-direction:column; align-items:flex-end; gap:.4rem">
       <div class="live-badge"><div class="live-dot"></div> LIVE</div>
-      <span id="last-update">Ab update ho raha hai...</span>
+      <span id="last-update">Updating now...</span>
     </div>
   </div>
 
@@ -279,7 +285,7 @@
     </div>
     <div class="stat-card">
       <span class="stat-num" id="s-not-voted">--</span>
-      <span class="stat-label">Abhi Tak Nahi</span>
+      <span class="stat-label">Not Voted Yet</span>
     </div>
     <div class="stat-card">
       <span class="stat-num green" id="s-turnout">--%</span>
@@ -293,8 +299,8 @@
 
   <!-- Not public notice (hidden by default) -->
   <div id="not-public-notice" class="notice" style="display:none">
-    <h3>⏳ Results Abhi Public Nahi</h3>
-    <p>Voting schedule shuru hone ke baad ya khatam hone ke baad results yahan dikhenge.</p>
+    <h3>⏳ Results Not Public Yet</h3>
+    <p>Results will appear here after the voting schedule starts or ends.</p>
   </div>
 
   <!-- Main content -->
@@ -319,7 +325,7 @@
 
       <!-- Winner -->
       <div class="side-card winner-card" id="winner-card" style="display:none">
-        <div class="card-title">🏆 Aagey Chal Raha Hai</div>
+        <div class="card-title">🏆 Leading Candidate</div>
         <span class="winner-symbol" id="w-symbol">🗳️</span>
         <p class="winner-name"  id="w-name">--</p>
         <p class="winner-party" id="w-party">--</p>
@@ -375,9 +381,9 @@
       renderResults(rData);
 
       document.getElementById("last-update").textContent =
-        "Akhari update: " + new Date().toLocaleTimeString("ur-PK");
+        "Last updated: " + new Date().toLocaleTimeString();
     } catch(e) {
-      document.getElementById("last-update").textContent = "Update fail — backend check karo";
+      document.getElementById("last-update").textContent = "Update failed — check backend";
     }
   }
 
@@ -390,8 +396,8 @@
     setText("s-female",       s.female_voted);
 
     if (s.schedule) {
-      const start = new Date(s.schedule.start).toLocaleString("en-PK");
-      const end   = new Date(s.schedule.end).toLocaleString("en-PK");
+      const start = new Date(s.schedule.start).toLocaleString();
+      const end   = new Date(s.schedule.end).toLocaleString();
       document.getElementById("schedule-info").innerHTML =
         `<b style="color:var(--cyan-dim)">Schedule</b><br>Start: ${start}<br>End: ${end}<br>Status: <span style="color:${s.voting_active ? "var(--green)" : "var(--amber)"}">${s.voting_active ? "Active ✓" : "Inactive"}</span>`;
     }
@@ -439,12 +445,12 @@
           plugins: { legend: { display: false } },
           scales: {
             x: {
-              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Share Tech Mono", size: 11 } },
+              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Inter", size: 11 } },
               grid : { color: "rgba(0,234,255,.06)" }
             },
             y: {
               beginAtZero: true,
-              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Share Tech Mono", size: 11 }, stepSize: 1 },
+              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Inter", size: 11 }, stepSize: 1 },
               grid : { color: "rgba(0,234,255,.06)" }
             }
           }

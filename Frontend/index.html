@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Voting System — Secure Digital Elections</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -20,8 +22,9 @@
       --green    : #00ff88;
       --text     : rgba(255,255,255,.88);
       --muted    : rgba(255,255,255,.38);
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-head: 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -29,12 +32,15 @@
     body {
       background : var(--bg);
       color      : var(--text);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       min-height : 100vh;
       overflow-x : hidden;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Grid noise ──────────────────────────────────────────────────────── */
+    /* ── Grid noise ── preserved exactly ──────────────────────────────────── */
     body::before {
       content : "";
       position: fixed;
@@ -48,7 +54,7 @@
       z-index: 0;
     }
 
-    /* ── Navbar ──────────────────────────────────────────────────────────── */
+    /* ── Navbar (unchanged structure, only text cleaned & font updated) ───── */
     nav {
       display        : flex;
       align-items    : center;
@@ -64,6 +70,7 @@
     .nav-logo {
       font-family   : var(--font-head);
       font-size     : 1rem;
+      font-weight   : 600;
       color         : var(--cyan);
       letter-spacing: .2em;
       text-decoration: none;
@@ -74,6 +81,7 @@
       color          : var(--muted);
       text-decoration: none;
       font-size      : .78rem;
+      font-weight    : 500;
       letter-spacing : .07em;
       transition     : color .2s;
     }
@@ -102,7 +110,6 @@
       overflow      : hidden;
     }
 
-    /* Radial glow behind hero text */
     .hero::after {
       content  : "";
       position : absolute;
@@ -123,6 +130,7 @@
       border       : 1px solid rgba(0,234,255,.2);
       border-radius: 20px;
       font-size    : .7rem;
+      font-weight  : 500;
       color        : var(--cyan-dim);
       letter-spacing: .12em;
       margin-bottom: 2rem;
@@ -143,20 +151,21 @@
     .hero-title {
       font-family   : var(--font-head);
       font-size     : clamp(2.2rem, 6vw, 4.5rem);
-      font-weight   : 900;
-      letter-spacing: .06em;
-      line-height   : 1.1;
+      font-weight   : 700;
+      letter-spacing: -0.02em;
+      line-height   : 1.2;
       margin-bottom : 1.2rem;
       animation     : fadeDown .6s .1s ease both;
     }
     .hero-title .accent { color: var(--cyan); }
-    .hero-title .dim    { color: rgba(255,255,255,.3); font-weight: 400; }
+    .hero-title .dim    { color: rgba(255,255,255,.3); font-weight: 500; }
 
     .hero-sub {
       max-width    : 560px;
-      font-size    : .9rem;
+      font-size    : .95rem;
+      font-weight  : 400;
       color        : var(--muted);
-      line-height  : 1.8;
+      line-height  : 1.7;
       margin-bottom: 2.8rem;
       animation    : fadeDown .6s .2s ease both;
     }
@@ -177,6 +186,7 @@
       color        : var(--cyan);
       font-family  : var(--font-head);
       font-size    : .75rem;
+      font-weight  : 600;
       letter-spacing: .15em;
       text-transform: uppercase;
       text-decoration: none;
@@ -196,6 +206,7 @@
       color        : rgba(255,255,255,.55);
       font-family  : var(--font-head);
       font-size    : .75rem;
+      font-weight  : 500;
       letter-spacing: .15em;
       text-transform: uppercase;
       text-decoration: none;
@@ -206,7 +217,7 @@
       color       : rgba(255,255,255,.85);
     }
 
-    /* Floating particles */
+    /* Particles unchanged */
     .particles {
       position: absolute;
       inset   : 0;
@@ -229,7 +240,6 @@
       100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
     }
 
-    /* Scroll indicator */
     .scroll-hint {
       position : absolute;
       bottom   : 2rem;
@@ -260,7 +270,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Stats bar ───────────────────────────────────────────────────────── */
+    /* Stats bar */
     .stats-bar {
       position  : relative;
       z-index   : 1;
@@ -291,12 +301,13 @@
     }
     .stat-label {
       font-size: .68rem;
+      font-weight: 500;
       color    : var(--muted);
       letter-spacing: .1em;
       text-transform: uppercase;
     }
 
-    /* ── Section base ────────────────────────────────────────────────────── */
+    /* Sections */
     section {
       position: relative;
       z-index : 1;
@@ -308,6 +319,7 @@
     }
     .section-label {
       font-size    : .68rem;
+      font-weight  : 600;
       color        : var(--cyan-dim);
       letter-spacing: .2em;
       text-transform: uppercase;
@@ -317,18 +329,18 @@
       font-family   : var(--font-head);
       font-size     : clamp(1.3rem, 3vw, 2rem);
       font-weight   : 700;
-      letter-spacing: .06em;
+      letter-spacing: -0.01em;
       margin-bottom : .8rem;
     }
     .section-sub {
       color    : var(--muted);
-      font-size: .85rem;
-      line-height: 1.8;
+      font-size: .88rem;
+      line-height: 1.7;
       max-width: 480px;
       margin-bottom: 3.5rem;
     }
 
-    /* ── How it works ────────────────────────────────────────────────────── */
+    /* How it works */
     .steps-grid {
       display             : grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -360,7 +372,7 @@
     .step-num {
       font-family   : var(--font-head);
       font-size     : 2.2rem;
-      font-weight   : 900;
+      font-weight   : 700;
       color         : rgba(0,234,255,.12);
       letter-spacing: .05em;
       line-height   : 1;
@@ -373,19 +385,21 @@
     }
     .step-title {
       font-family   : var(--font-head);
-      font-size     : .78rem;
+      font-size     : .8rem;
+      font-weight   : 600;
       color         : var(--text);
       letter-spacing: .1em;
       margin-bottom : .5rem;
       text-transform: uppercase;
     }
     .step-desc {
-      font-size  : .75rem;
+      font-size  : .76rem;
+      font-weight: 400;
       color      : var(--muted);
       line-height: 1.7;
     }
 
-    /* ── Security features ───────────────────────────────────────────────── */
+    /* Security features */
     .features-section {
       background: rgba(7,15,28,.5);
       border-top: 1px solid var(--border);
@@ -421,19 +435,21 @@
     }
     .feature-body h4 {
       font-family   : var(--font-head);
-      font-size     : .72rem;
-      letter-spacing: .1em;
+      font-size     : .74rem;
+      font-weight   : 600;
+      letter-spacing: .08em;
       color         : var(--text);
       margin-bottom : .3rem;
       text-transform: uppercase;
     }
     .feature-body p {
-      font-size  : .73rem;
+      font-size  : .74rem;
+      font-weight: 400;
       color      : var(--muted);
       line-height: 1.6;
     }
 
-    /* ── CTA section ─────────────────────────────────────────────────────── */
+    /* CTA */
     .cta-section {
       text-align: center;
     }
@@ -457,12 +473,13 @@
     .cta-box h2 {
       font-family   : var(--font-head);
       font-size     : clamp(1.1rem, 3vw, 1.6rem);
-      letter-spacing: .1em;
+      font-weight   : 700;
+      letter-spacing: -0.02em;
       margin-bottom : .8rem;
     }
     .cta-box p {
       color        : var(--muted);
-      font-size    : .82rem;
+      font-size    : .84rem;
       line-height  : 1.7;
       margin-bottom: 2rem;
     }
@@ -473,7 +490,7 @@
       flex-wrap      : wrap;
     }
 
-    /* ── Footer ──────────────────────────────────────────────────────────── */
+    /* Footer */
     footer {
       position  : relative;
       z-index   : 1;
@@ -488,6 +505,7 @@
     .footer-logo {
       font-family   : var(--font-head);
       font-size     : .85rem;
+      font-weight   : 600;
       color         : var(--cyan);
       letter-spacing: .18em;
     }
@@ -502,6 +520,7 @@
       color          : var(--muted);
       text-decoration: none;
       font-size      : .72rem;
+      font-weight    : 500;
       transition     : color .2s;
     }
     .footer-links a:hover { color: var(--cyan); }
@@ -518,7 +537,7 @@
 </head>
 <body>
 
-<!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+<!-- ── Navbar (All Roman Urdu removed) ───────────────────────────────────── -->
 <nav>
   <a class="nav-logo" href="index.html">E<span>·</span>VOTE</a>
   <div class="nav-links">
@@ -526,40 +545,33 @@
     <a href="register.html">Register</a>
     <a href="login.html">Login</a>
     <a href="result.html">Results</a>
-    <a href="login.html" class="nav-cta">Vote Karo</a>
+    <a href="login.html" class="nav-cta">Cast Vote</a>
   </div>
 </nav>
 
-<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<!-- ── Hero (Fully English, no Roman Urdu) ────────────────────────────────── -->
 <section class="hero">
-
-  <!-- Particles -->
   <div class="particles" id="particles"></div>
-
   <div class="hero-badge">SECURE DIGITAL ELECTION SYSTEM</div>
-
   <h1 class="hero-title">
-    Pakistan Ka<br>
+    Pakistan's<br>
     <span class="accent">Digital Vote</span><br>
     <span class="dim">Secure · Transparent · Fast</span>
   </h1>
-
   <p class="hero-sub">
-    Fingerprint biometrics aur advanced encryption ke saath — apna vote ghar baithe safely cast karo. Koi dhoka nahi, koi double vote nahi.
+    With fingerprint biometrics and advanced encryption — cast your vote safely from home. No fraud, no double voting.
   </p>
-
   <div class="hero-btns">
-    <a href="register.html" class="btn-primary">Abhi Register Karo</a>
+    <a href="register.html" class="btn-primary">Register Now</a>
     <a href="login.html" class="btn-secondary">Login → Vote</a>
   </div>
-
   <div class="scroll-hint">
     <div class="scroll-line"></div>
     SCROLL
   </div>
 </section>
 
-<!-- ── Stats bar ──────────────────────────────────────────────────────────── -->
+<!-- ── Stats bar (unchanged logic, text already English) ─────────────────── -->
 <div class="stats-bar">
   <div class="stat-item">
     <span class="stat-num" id="stat-voters">--</span>
@@ -579,111 +591,111 @@
   </div>
 </div>
 
-<!-- ── How it works ───────────────────────────────────────────────────────── -->
+<!-- ── How it works section (All English, no Roman Urdu) ──────────────────── -->
 <section>
   <div class="section-inner">
     <p class="section-label">Process</p>
-    <h2 class="section-title">Kaise Kaam Karta Hai?</h2>
-    <p class="section-sub">Sirf 4 آسان steps mein apna vote cast karo — poori security ke saath</p>
+    <h2 class="section-title">How It Works?</h2>
+    <p class="section-sub">Cast your vote in 4 simple steps — with end-to-end security</p>
 
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">01</div>
         <span class="step-icon">📋</span>
-        <h3 class="step-title">Register Karo</h3>
-        <p class="step-desc">Apna naam, CNIC, email aur fingerprint scan karke account banao. Ek baar ka process.</p>
+        <h3 class="step-title">Register</h3>
+        <p class="step-desc">Create your account using name, CNIC, email, and fingerprint scan. One-time process.</p>
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
         <span class="step-icon">🔐</span>
-        <h3 class="step-title">Login Karo</h3>
-        <p class="step-desc">Email + password + fingerprint — teeno se identity verify hoti hai. Koi bhi impersonate nahi kar sakta.</p>
+        <h3 class="step-title">Login</h3>
+        <p class="step-desc">Verify identity using email + password + fingerprint. No impersonation possible.</p>
       </div>
       <div class="step-card">
         <div class="step-num">03</div>
         <span class="step-icon">🗳️</span>
-        <h3 class="step-title">Vote Dalo</h3>
-        <p class="step-desc">Apna candidate choose karo. Location automatically capture hoti hai. Vote sirf schedule ke waqt hi possible hai.</p>
+        <h3 class="step-title">Cast Vote</h3>
+        <p class="step-desc">Choose your candidate. Location is automatically captured. Voting only possible during schedule.</p>
       </div>
       <div class="step-card">
         <div class="step-num">04</div>
         <span class="step-icon">📊</span>
-        <h3 class="step-title">Results Dekho</h3>
-        <p class="step-desc">Live charts pe real-time results dekho. Winner highlight aur turnout percentage clearly visible.</p>
+        <h3 class="step-title">View Results</h3>
+        <p class="step-desc">See real-time results on live charts. Winner highlight and turnout percentage clearly visible.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Security features ───────────────────────────────────────────────────── -->
+<!-- ── Security features (All English, roman urdu fully removed) ────────────── -->
 <section class="features-section">
   <div class="section-inner">
     <p class="section-label">Security</p>
     <h2 class="section-title">Multi-Layer Protection</h2>
-    <p class="section-sub">Har step pe security — sirf asli voter ka vote count hota hai</p>
+    <p class="section-sub">Security at every step — only real voters' votes are counted</p>
 
     <div class="features-grid">
       <div class="feature-item">
         <div class="feature-icon">🖐</div>
         <div class="feature-body">
           <h4>Fingerprint Biometrics</h4>
-          <p>SecuGen HU20 scanner se ISO-format template store hota hai. Login aur vote dono pe fingerprint match zaroori hai.</p>
+          <p>ISO-format template stored via SecuGen HU20 scanner. Fingerprint match required for both login and vote.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🔒</div>
         <div class="feature-body">
           <h4>Bcrypt Password Hashing</h4>
-          <p>Password kabhi plain text mein store nahi hota — bcrypt salt rounds ke saath hash hoke DB mein jaata hai.</p>
+          <p>Passwords are never stored in plain text — hashed with bcrypt salt rounds before entering database.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">⏰</div>
         <div class="feature-body">
           <h4>Voting Schedule Lock</h4>
-          <p>Admin jo time window set kare, sirf usi ke andar vote possible hai. Early ya late vote server side block hoti hai.</p>
+          <p>Voting only possible within the time window set by admin. Early or late votes are blocked server-side.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🚫</div>
         <div class="feature-body">
           <h4>Double Vote Prevention</h4>
-          <p>Ek voter sirf ek baar vote de sakta hai. Server side check — client trust nahi kiya jaata.</p>
+          <p>Each voter can vote only once. Server-side verification ensures no client-side tampering.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">📍</div>
         <div class="feature-body">
           <h4>Location Tracking</h4>
-          <p>Vote ke waqt GPS coordinates capture hote hain. OpenStreetMap Nominatim se city/area naam nikala jaata hai.</p>
+          <p>GPS coordinates captured at time of vote. City/area name is retrieved via OpenStreetMap Nominatim.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🛡️</div>
         <div class="feature-body">
           <h4>Session Management</h4>
-          <p>Admin aur voter ka session alag. Har protected route pe session verify hoti hai — unauthorized access block.</p>
+          <p>Separate admin and voter sessions. Every protected route verifies session — unauthorized access blocked.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ────────────────────────────────────────────────────────────────── -->
+<!-- ── CTA section (no roman urdu) ────────────────────────────────────────── -->
 <section class="cta-section">
   <div class="section-inner">
     <div class="cta-box">
-      <h2>Tayyar Hain? Vote Dene Ka Waqt Hai</h2>
-      <p>Abhi register karo ya login karke apna vote cast karo. Aapki awaz, aapka haq.</p>
+      <h2>Ready? Time to Vote</h2>
+      <p>Register now or login to cast your vote. Your voice, your right.</p>
       <div class="cta-btns">
-        <a href="register.html" class="btn-primary">Register Karo</a>
+        <a href="register.html" class="btn-primary">Register Now</a>
         <a href="login.html" class="btn-secondary">Login → Vote</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<!-- ── Footer (English only) ─────────────────────────────────────────────── -->
 <footer>
   <div class="footer-logo">E<span>·</span>VOTE</div>
   <p>© 2025 E-Voting System · Flask · MongoDB · SecuGen HU20</p>
@@ -696,7 +708,7 @@
 </footer>
 
 <script>
-  // ── Floating particles ────────────────────────────────────────────────────
+  // Floating particles (same as original, untouched)
   const container = document.getElementById("particles");
   for (let i = 0; i < 18; i++) {
     const p = document.createElement("div");
@@ -712,7 +724,7 @@
     container.appendChild(p);
   }
 
-  // ── Live stats from backend ───────────────────────────────────────────────
+  // Live stats from backend (exactly same logic, no changes)
   async function loadStats() {
     try {
       const [statsRes, candRes] = await Promise.all([
@@ -730,7 +742,7 @@
         animateNum("stat-candidates", c.results ? c.results.length : 0);
       }
     } catch (e) {
-      // Backend down — placeholders reh jaate hain
+      // Backend down — placeholders remain
     }
   }
 

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — E-Voting System</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,20 +24,23 @@
       --amber     : #ffb300;
       --text      : rgba(255,255,255,.88);
       --muted     : rgba(255,255,255,.4);
-      --font-mono : 'Share Tech Mono', monospace;
-      --font-head : 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body : 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head : 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
 
     body {
       background : var(--bg);
       color      : var(--text);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       min-height : 100vh;
       display    : flex;
       flex-direction: column;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Grid noise overlay ──────────────────────────────────────────────── */
+    /* ── Grid noise overlay (preserved) ─────────────────────────────────── */
     body::before {
       content : "";
       position: fixed;
@@ -66,6 +71,7 @@
     .nav-logo {
       font-family   : var(--font-head);
       font-size     : .9rem;
+      font-weight   : 600;
       color         : var(--cyan);
       letter-spacing: .18em;
       text-decoration: none;
@@ -76,6 +82,7 @@
       color          : var(--muted);
       text-decoration: none;
       font-size      : .78rem;
+      font-weight    : 500;
       letter-spacing : .06em;
       transition     : color .2s;
     }
@@ -103,6 +110,7 @@
     .page-title {
       font-family   : var(--font-head);
       font-size     : 1.1rem;
+      font-weight   : 600;
       letter-spacing: .18em;
       color         : var(--cyan);
       text-transform: uppercase;
@@ -137,6 +145,7 @@
 
     .form-section-label {
       font-size    : .65rem;
+      font-weight  : 600;
       color        : var(--muted);
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -149,6 +158,7 @@
     .field-group label {
       display      : block;
       font-size    : .72rem;
+      font-weight  : 500;
       color        : var(--cyan-dim);
       letter-spacing: .1em;
       margin-bottom: .4rem;
@@ -160,7 +170,7 @@
       border      : 1px solid var(--border);
       border-radius: 7px;
       color       : var(--text);
-      font-family : var(--font-mono);
+      font-family : var(--font-body);
       font-size   : .85rem;
       padding     : .65rem .9rem;
       outline     : none;
@@ -182,7 +192,7 @@
     .field-group.has-error input { border-color: var(--red); }
     .field-group.has-error .field-err { display: block; }
 
-    /* ── Security notice ─────────────────────────────────────────────────── */
+    /* ── Security notice (English only) ─────────────────────────────────── */
     .security-notice {
       display     : flex;
       align-items : flex-start;
@@ -216,6 +226,7 @@
       color        : var(--cyan);
       font-family  : var(--font-head);
       font-size    : .8rem;
+      font-weight  : 600;
       letter-spacing: .15em;
       text-transform: uppercase;
       cursor       : pointer;
@@ -289,6 +300,7 @@
     .fp-panel-title {
       font-family   : var(--font-head);
       font-size     : .72rem;
+      font-weight   : 600;
       letter-spacing: .14em;
       color         : var(--cyan-dim);
       text-transform: uppercase;
@@ -346,7 +358,7 @@
 </head>
 <body>
 
-<!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+<!-- ── Navbar (All Roman Urdu removed) ─────────────────────────────────────── -->
 <nav>
   <a class="nav-logo" href="index.html">E<span>·</span>VOTE</a>
   <div class="nav-links">
@@ -360,7 +372,7 @@
 <main>
   <div class="login-shell">
     <p class="page-title">Voter Login</p>
-    <p class="page-sub">Email, password aur fingerprint — teeno zaroori hain</p>
+    <p class="page-sub">Email, password and fingerprint — all three required</p>
 
     <div class="panels">
 
@@ -370,7 +382,7 @@
 
         <div class="security-notice">
           <span class="icon">🔒</span>
-          <span>Aapki identity verify karne ke liye password ke saath fingerprint bhi lazmi hai. Ye double security aapke vote ki hifazat karta hai.</span>
+          <span>Your identity is verified using both password and fingerprint. This double-layer security protects your vote.</span>
         </div>
 
         <div class="field-group" id="fg-email">
@@ -381,7 +393,7 @@
 
         <div class="field-group" id="fg-password">
           <label>Password</label>
-          <input type="password" id="password" placeholder="Apna password dalen" autocomplete="current-password">
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
           <div class="field-err" id="err-password"></div>
         </div>
 
@@ -390,10 +402,10 @@
 
         <div class="submit-area">
           <button class="btn-submit" id="btn-login" onclick="loginUser()">
-            <span class="btn-text">Login Karo</span>
+            <span class="btn-text">Login</span>
             <span class="spinner"></span>
           </button>
-          <p class="register-link">Account nahi hai? <a href="register.html">Register karo</a></p>
+          <p class="register-link">Don't have an account? <a href="register.html">Register here</a></p>
         </div>
       </div><!-- /form-panel -->
 
@@ -406,11 +418,11 @@
 
       <!-- RIGHT: Fingerprint -->
       <div class="fp-panel">
-        <p class="fp-panel-title">Fingerprint Verify</p>
+        <p class="fp-panel-title">Fingerprint Verification</p>
         <div id="fp-container"></div>
-        <div id="fp-status-badge">Scan nahi hua</div>
+        <div id="fp-status-badge">Not scanned</div>
         <p class="fp-required-note">
-          ⚠ Wohi ungli rakho jo<br>registration ke waqt use ki thi
+          ⚠ Use the same finger<br>that you used during registration
         </p>
       </div>
 
@@ -421,7 +433,7 @@
 <footer>© 2025 E-Voting System · Secure · Transparent · Digital</footer>
 <div id="toast"></div>
 
-<!-- Scripts -->
+<!-- Scripts (external dependencies unchanged) -->
 <script src="js/fingerprint.js"></script>
 <script src="js/login.js"></script>
 </body>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voters — Admin Panel</title>
+  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -21,10 +23,11 @@
       --amber    : #ffb300;
       --text     : rgba(255,255,255,.88);
       --muted    : rgba(255,255,255,.4);
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-head: 'Orbitron', sans-serif;
+      /* New cleaner font stack */
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; flex-direction: column; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; font-weight: 400; -webkit-font-smoothing: antialiased; }
     body::before {
       content: ""; position: fixed; inset: 0;
       background:
@@ -41,13 +44,13 @@
       background: rgba(4,9,15,.9); backdrop-filter: blur(12px);
       position: sticky; top: 0; z-index: 100;
     }
-    .nav-logo { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
+    .nav-logo { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
     .nav-logo span { color: var(--text); }
     .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; letter-spacing: .06em; transition: color .2s; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; font-weight: 500; letter-spacing: .06em; transition: color .2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
-    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; color: var(--cyan); letter-spacing: .1em; }
-    .btn-logout { font-size: .72rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-mono); transition: color .2s, border-color .2s; }
+    .admin-badge { padding: .2rem .7rem; border-radius: 4px; background: rgba(0,234,255,.1); border: 1px solid rgba(0,234,255,.3); font-size: .65rem; font-weight: 500; color: var(--cyan); letter-spacing: .1em; }
+    .btn-logout { font-size: .72rem; font-weight: 500; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 5px; padding: .3rem .8rem; cursor: pointer; font-family: var(--font-body); transition: color .2s, border-color .2s; }
     .btn-logout:hover { color: var(--red); border-color: rgba(255,68,102,.4); }
 
     /* Login overlay */
@@ -56,15 +59,15 @@
       display: none; align-items: center; justify-content: center;
     }
     .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px; }
-    .login-title { font-family: var(--font-head); font-size: .9rem; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
+    .login-title { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-transform: uppercase; margin-bottom: .3rem; }
     .login-sub { font-size: .72rem; color: var(--muted); margin-bottom: 2rem; }
     .field-group { margin-bottom: 1rem; }
-    .field-group label { display: block; font-size: .68rem; color: var(--cyan-dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
-    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
+    .field-group label { display: block; font-size: .68rem; font-weight: 500; color: var(--cyan-dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+    .field-group input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-body); font-size: .85rem; padding: .6rem .9rem; outline: none; transition: border-color .2s; }
     .field-group input:focus { border-color: var(--border-h); }
     .field-group input::placeholder { color: var(--muted); }
     #login-err { color: var(--red); font-size: .72rem; margin-bottom: .8rem; display: none; }
-    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
+    .btn-login { width: 100%; padding: .8rem; border-radius: 7px; border: 1.5px solid var(--cyan); background: rgba(0,234,255,.1); color: var(--cyan); font-family: var(--font-head); font-size: .78rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; cursor: pointer; transition: background .25s; }
     .btn-login:hover { background: rgba(0,234,255,.22); }
 
     /* ── Main ── */
@@ -76,7 +79,7 @@
       flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
       animation: fadeUp .4s ease both;
     }
-    .page-title { font-family: var(--font-head); font-size: 1rem; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
+    .page-title { font-family: var(--font-head); font-size: 1rem; font-weight: 600; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
     .page-sub { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
 
     /* Stats row */
@@ -89,10 +92,10 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; padding: 1rem; text-align: center;
     }
-    .stat-mini-num { font-family: var(--font-head); font-size: 1.4rem; color: var(--cyan); display: block; }
+    .stat-mini-num { font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; color: var(--cyan); display: block; }
     .stat-mini-num.green { color: var(--green); }
     .stat-mini-num.amber { color: var(--amber); }
-    .stat-mini-label { font-size: .62rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .stat-mini-label { font-size: .62rem; font-weight: 500; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
 
     /* Toolbar */
     .toolbar {
@@ -101,14 +104,14 @@
     }
     .toolbar input {
       flex: 1; min-width: 180px; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text); font-family: var(--font-mono); font-size: .82rem;
+      border-radius: 6px; color: var(--text); font-family: var(--font-body); font-size: .82rem;
       padding: .55rem .9rem; outline: none; transition: border-color .2s;
     }
     .toolbar input:focus { border-color: var(--border-h); }
     .toolbar input::placeholder { color: var(--muted); }
 
     .filter-btn {
-      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-family: var(--font-mono);
+      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-weight: 500; font-family: var(--font-body);
       cursor: pointer; transition: all .2s; border: 1px solid var(--border);
       background: transparent; color: var(--muted);
     }
@@ -118,7 +121,7 @@
     .filter-btn.red-f.active   { border-color: var(--red);   background: rgba(255,68,102,.06); color: var(--red); }
 
     .btn-export {
-      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-family: var(--font-mono);
+      padding: .5rem 1rem; border-radius: 6px; font-size: .72rem; font-weight: 500; font-family: var(--font-body);
       cursor: pointer; border: 1px solid rgba(0,234,255,.25); background: rgba(0,234,255,.06);
       color: var(--cyan); transition: background .2s;
     }
@@ -132,14 +135,14 @@
     }
     .table-card-header {
       padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
-      font-family: var(--font-head); font-size: .7rem; letter-spacing: .14em;
+      font-family: var(--font-head); font-size: .7rem; font-weight: 600; letter-spacing: .14em;
       color: var(--cyan-dim); text-transform: uppercase;
       display: flex; justify-content: space-between; align-items: center;
     }
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: .78rem; }
     thead th {
-      font-family: var(--font-head); font-size: .62rem; letter-spacing: .1em;
+      font-family: var(--font-head); font-size: .62rem; font-weight: 600; letter-spacing: .1em;
       color: var(--cyan-dim); text-transform: uppercase;
       padding: .65rem 1rem; border-bottom: 1px solid var(--border);
       text-align: left; white-space: nowrap;
@@ -156,18 +159,18 @@
 
     .voted-badge {
       display: inline-flex; align-items: center; gap: .3rem;
-      padding: .2rem .65rem; border-radius: 20px; font-size: .68rem;
+      padding: .2rem .65rem; border-radius: 20px; font-size: .68rem; font-weight: 500;
     }
     .voted-badge.yes { color: var(--green); border: 1px solid rgba(0,255,136,.3); background: rgba(0,255,136,.06); }
     .voted-badge.no  { color: var(--muted); border: 1px solid var(--border); }
 
     .gender-badge {
-      font-size: .65rem; color: var(--muted); padding: .15rem .5rem;
+      font-size: .65rem; font-weight: 500; color: var(--muted); padding: .15rem .5rem;
       border-radius: 4px; border: 1px solid var(--border);
     }
 
-    .td-cnic { font-size: .72rem; color: var(--muted); font-family: var(--font-mono); white-space: nowrap; }
-    .td-name { font-size: .82rem; }
+    .td-cnic { font-size: .72rem; color: var(--muted); font-family: var(--font-body); white-space: nowrap; }
+    .td-name { font-size: .82rem; font-weight: 500; }
     .td-email { font-size: .7rem; color: var(--muted); }
     .td-loc { font-size: .68rem; color: var(--muted); }
 
@@ -175,13 +178,13 @@
     .pagination {
       display: flex; align-items: center; justify-content: space-between;
       padding: 1rem 1.5rem; border-top: 1px solid var(--border);
-      font-size: .72rem; color: var(--muted);
+      font-size: .72rem; font-weight: 500; color: var(--muted);
     }
     .page-btns { display: flex; gap: .4rem; }
     .page-btn {
       width: 30px; height: 30px; border-radius: 5px; border: 1px solid var(--border);
-      background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font-mono);
-      font-size: .72rem; display: flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font-body);
+      font-size: .72rem; font-weight: 500; display: flex; align-items: center; justify-content: center;
       transition: all .2s;
     }
     .page-btn:hover:not(:disabled) { border-color: rgba(0,234,255,.3); color: var(--cyan); }
@@ -225,7 +228,7 @@
              onkeydown="if(event.key==='Enter') adminLogin()">
     </div>
     <div id="login-err"></div>
-    <button class="btn-login" onclick="adminLogin()">Login Karo</button>
+    <button class="btn-login" onclick="adminLogin()">Login</button>
   </div>
 </div>
 
@@ -246,7 +249,7 @@
   <div class="page-header">
     <div>
       <p class="page-title">Voters Management</p>
-      <p class="page-sub">Registered voters ki complete list — status aur location ke saath</p>
+      <p class="page-sub">Complete list of registered voters — with status and location</p>
     </div>
     <button class="btn-export" onclick="exportCSV()">⬇ CSV Export</button>
   </div>
@@ -259,7 +262,7 @@
     </div>
     <div class="stat-mini">
       <span class="stat-mini-num green" id="s-voted">--</span>
-      <span class="stat-mini-label">Vote De Chuke</span>
+      <span class="stat-mini-label">Have Voted</span>
     </div>
     <div class="stat-mini">
       <span class="stat-mini-num" id="s-pending">--</span>
@@ -281,10 +284,10 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <input type="text" id="search-q" placeholder="Naam, CNIC ya email se dhundho..."
+    <input type="text" id="search-q" placeholder="Search by name, CNIC, or email..."
            oninput="applyFilters()">
-    <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">Sab</button>
-    <button class="filter-btn green-f" id="f-voted" onclick="setFilter('voted')">Vote Diya ✓</button>
+    <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">All</button>
+    <button class="filter-btn green-f" id="f-voted" onclick="setFilter('voted')">Voted ✓</button>
     <button class="filter-btn red-f"   id="f-not"   onclick="setFilter('not')">Pending</button>
     <span style="font-size:.72rem;color:var(--muted);margin-left:auto" id="filter-count"></span>
   </div>
@@ -300,17 +303,17 @@
         <thead>
           <tr>
             <th onclick="sortBy('name')">#  <span class="sort-arrow" id="sort-name"></span></th>
-            <th>Naam</th>
+            <th>Name</th>
             <th onclick="sortBy('cnic')">CNIC <span class="sort-arrow" id="sort-cnic"></span></th>
             <th>Email</th>
-            <th>Jins / Umar</th>
+            <th>Gender / Age</th>
             <th onclick="sortBy('hasVoted')">Status <span class="sort-arrow" id="sort-hasVoted"></span></th>
             <th onclick="sortBy('voted_at')">Vote Time <span class="sort-arrow" id="sort-voted_at"></span></th>
             <th>Location</th>
           </tr>
         </thead>
         <tbody id="voters-tbody">
-          <tr><td colspan="8"><div class="empty-state"><span class="empty-icon">⏳</span>Load ho raha hai...</div></td></tr>
+          <tr><td colspan="8"><div class="empty-state"><span class="empty-icon">⏳</span>Loading...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -370,7 +373,7 @@
 
       applyFilters();
     } catch(e) {
-      showToast("Voters load nahi hue", "err");
+      showToast("Failed to load voters", "err");
     }
   }
 
@@ -439,7 +442,7 @@
 
     const tbody = document.getElementById("voters-tbody");
     if (page.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><span class="empty-icon">🔍</span>Koi voter is filter se nahi mila</div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><span class="empty-icon">🔍</span>No voters match this filter</div></td></tr>`;
       renderPagination(0);
       return;
     }
@@ -451,22 +454,22 @@
         <tr>
           <td style="color:var(--muted);font-size:.68rem">${start + i + 1}</td>
           <td>
-            <div class="td-name">${v.name}</div>
-            <div class="td-email">${v.email}</div>
-          </td>
-          <td class="td-cnic">${v.cnic}</td>
-          <td class="td-email" style="font-size:.7rem">${v.email}</td>
+            <div class="td-name">${escapeHtml(v.name)}</div>
+            <div class="td-email">${escapeHtml(v.email)}</div>
+           </td>
+          <td class="td-cnic">${escapeHtml(v.cnic)}</td>
+          <td class="td-email" style="font-size:.7rem">${escapeHtml(v.email)}</td>
           <td>
             <span class="gender-badge">${v.gender === "male" ? "♂" : v.gender === "female" ? "♀" : "—"}</span>
             <span style="font-size:.68rem;color:var(--muted);margin-left:.3rem">${v.age ?? "--"}</span>
-          </td>
+           </td>
           <td>
             <span class="voted-badge ${v.hasVoted ? "yes" : "no"}">
               ${v.hasVoted ? "✓ Voted" : "○ Pending"}
             </span>
-          </td>
+           </td>
           <td class="td-loc">${v.voted_at ? fmtDate(v.voted_at) : "--"}</td>
-          <td class="td-loc">${locStr}</td>
+          <td class="td-loc">${escapeHtml(locStr)}</td>
         </tr>
       `;
     }).join("");
@@ -515,13 +518,13 @@
 
   // ── Export CSV ────────────────────────────────────────────────────────────
   function exportCSV() {
-    const headers = ["Naam","CNIC","Email","Jins","Umar","Address","Voted","Vote Time","City"];
+    const headers = ["Name","CNIC","Email","Gender","Age","Address","Voted","Vote Time","City"];
     const rows = filteredVoters.map(v => {
       const loc = v.vote_location;
       return [
         v.name, v.cnic, v.email, v.gender, v.age, v.address,
         v.hasVoted ? "Yes" : "No",
-        v.voted_at ? new Date(v.voted_at).toLocaleString("en-PK") : "",
+        v.voted_at ? new Date(v.voted_at).toLocaleString() : "",
         loc?.city || "",
       ].map(f => `"${String(f ?? "").replace(/"/g,'""')}"`).join(",");
     });
@@ -534,7 +537,17 @@
     a.download = `voters_${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast("✓ CSV download ho gaya", "ok");
+    showToast("✓ CSV downloaded successfully", "ok");
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === "&") return "&amp;";
+      if (m === "<") return "&lt;";
+      if (m === ">") return "&gt;";
+      return m;
+    });
   }
 </script>
 </body>

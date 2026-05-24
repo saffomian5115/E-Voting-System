@@ -4,270 +4,223 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Results — E-Voting System</title>
-  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg       : #04090f;
-      --surface  : #080f1c;
-      --surface2 : #0c1525;
-      --border   : rgba(0,234,255,.12);
-      --cyan     : #00eaff;
-      --cyan-dim : rgba(0,234,255,.7);
-      --green    : #00ff88;
-      --red      : #ff4466;
-      --amber    : #ffb300;
-      --text     : rgba(255,255,255,.88);
-      --muted    : rgba(255,255,255,.4);
-      /* New cleaner font stack */
-      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+      --bg        : #f8f7f4;
+      --bg-alt    : #f0ede8;
+      --surface   : #ffffff;
+      --surface2  : #f5f3ef;
+      --surface3  : #ece9e3;
+      --border    : #e2ddd6;
+      --navy      : #1a2744;
+      --navy-mid  : #2c3e6b;
+      --accent    : #2563eb;
+      --accent-dim: rgba(37,99,235,.1);
+      --green     : #16a34a;
+      --green-dim : rgba(22,163,74,.1);
+      --red       : #dc2626;
+      --red-dim   : rgba(220,38,38,.1);
+      --amber     : #d97706;
+      --amber-dim : rgba(217,119,6,.1);
+      --text      : #1c1c28;
+      --text-2    : #4a4a5a;
+      --muted     : #8a8a9a;
+      --ink       : #0f0f1a;
+      --font-body : 'DM Sans', system-ui, sans-serif;
+      --font-head : 'Fraunces', Georgia, serif;
+      --shadow-sm : 0 1px 3px rgba(0,0,0,.06);
+      --shadow-md : 0 4px 16px rgba(0,0,0,.08);
     }
     body {
-      background : var(--bg);
-      color      : var(--text);
-      font-family: var(--font-body);
-      min-height : 100vh;
-      display    : flex;
-      flex-direction: column;
-      font-weight: 400;
-      -webkit-font-smoothing: antialiased;
+      background: var(--bg); color: var(--text); font-family: var(--font-body);
+      min-height: 100vh; display: flex; flex-direction: column;
+      -webkit-font-smoothing: antialiased; font-size: 15px;
     }
-    body::before {
-      content : "";
-      position: fixed;
-      inset   : 0;
-      background:
-        repeating-linear-gradient(0deg, transparent, transparent 39px,
-          rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px),
-        repeating-linear-gradient(90deg, transparent, transparent 39px,
-          rgba(0,234,255,.025) 39px, rgba(0,234,255,.025) 40px);
-      pointer-events: none;
-      z-index: 0;
-    }
-    nav, main, footer { position: relative; z-index: 1; }
 
+    /* ── Navbar ── */
     nav {
-      display        : flex;
-      align-items    : center;
-      justify-content: space-between;
-      padding        : 1rem 2rem;
-      border-bottom  : 1px solid var(--border);
-      background     : rgba(4,9,15,.9);
-      backdrop-filter: blur(12px);
-      position       : sticky;
-      top            : 0;
-      z-index        : 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px; background: var(--surface);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0;
+      z-index: 100; box-shadow: var(--shadow-sm);
     }
-    .nav-logo { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--cyan); letter-spacing: .18em; text-decoration: none; }
-    .nav-logo span { color: var(--text); }
-    .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .78rem; font-weight: 500; letter-spacing: .06em; transition: color .2s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .nav-logo { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--navy); text-decoration: none; }
+    .nav-logo em { font-style: italic; color: var(--accent); }
+    .nav-links { display: flex; gap: .15rem; align-items: center; }
+    .nav-links a { color: var(--text-2); text-decoration: none; font-size: .875rem; font-weight: 500; padding: .4rem .75rem; border-radius: 6px; transition: background .15s, color .15s; }
+    .nav-links a:hover { background: var(--surface2); color: var(--ink); }
+    .nav-links a.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+    .nav-links a.nav-admin { color: var(--muted); font-size: .8125rem; border: 1px solid var(--border); }
+    .nav-links a.nav-admin:hover { color: var(--text); border-color: var(--text-2); background: var(--surface2); }
 
+    /* ── Main ── */
     main { flex: 1; padding: 2.5rem 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
 
-    /* ── Live badge ──────────────────────────────────────────────────────── */
-    .live-row {
-      display      : flex;
-      align-items  : center;
-      justify-content: space-between;
-      flex-wrap    : wrap;
-      gap          : 1rem;
-      margin-bottom: 2rem;
-      animation    : fadeUp .4s ease both;
-    }
-    .page-title { font-family: var(--font-head); font-size: 1rem; font-weight: 600; letter-spacing: .18em; color: var(--cyan); text-transform: uppercase; }
-    .page-sub   { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
+    /* ── Page header row ── */
+    .page-header-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+      animation: fadeUp .4s ease both;
+    }
+    .page-title { font-family: var(--font-head); font-size: 1.75rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; margin-bottom: .2rem; }
+    .page-sub { font-size: .9375rem; color: var(--text-2); }
+
+    /* Live badge */
     .live-badge {
-      display    : flex;
-      align-items: center;
-      gap        : .5rem;
-      padding    : .35rem .9rem;
-      border-radius: 20px;
-      border     : 1px solid rgba(0,255,136,.3);
-      background : rgba(0,255,136,.06);
-      font-size  : .72rem;
-      color      : var(--green);
+      display: flex; align-items: center; gap: .5rem;
+      padding: .35rem .9rem; border-radius: 20px;
+      border: 1px solid rgba(22,163,74,.3); background: var(--green-dim);
+      font-size: .8125rem; font-weight: 600; color: var(--green);
     }
-    .live-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: livePulse 1.5s ease-in-out infinite;
-    }
-    @keyframes livePulse {
-      0%,100% { opacity: 1; }
-      50%     { opacity: .3; }
-    }
-    #last-update { font-size: .65rem; color: var(--muted); }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: livePulse 1.5s ease-in-out infinite; }
+    @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    #last-update { font-size: .75rem; color: var(--muted); margin-top: .3rem; text-align: right; }
 
-    /* ── Stats row ───────────────────────────────────────────────────────── */
+    /* ── Stats row ── */
     .stats-row {
-      display             : grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap                 : 1rem;
-      margin-bottom       : 2rem;
-      animation           : fadeUp .4s .1s ease both;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+      animation: fadeUp .4s .08s ease both;
     }
     .stat-card {
-      background   : var(--surface);
-      border       : 1px solid var(--border);
-      border-radius: 12px;
-      padding      : 1.2rem;
-      text-align   : center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem; text-align: center;
+      box-shadow: var(--shadow-sm);
     }
-    .stat-num {
-      font-family   : var(--font-head);
-      font-size     : 1.6rem;
-      font-weight   : 700;
-      color         : var(--cyan);
-      letter-spacing: .05em;
-      display       : block;
-      margin-bottom : .3rem;
-    }
+    .stat-num { font-family: var(--font-head); font-size: 1.75rem; font-weight: 700; color: var(--navy); display: block; margin-bottom: .3rem; letter-spacing: -.02em; }
     .stat-num.green { color: var(--green); }
-    .stat-label { font-size: .65rem; font-weight: 500; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .stat-label { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
 
-    /* ── Content grid ────────────────────────────────────────────────────── */
+    /* ── Content grid ── */
     .content-grid {
-      display             : grid;
-      grid-template-columns: 2fr 1fr;
-      gap                 : 1.5rem;
-      align-items         : start;
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 1.5rem; align-items: start;
+      animation: fadeUp .4s .14s ease both;
     }
-    @media(max-width:768px) { .content-grid { grid-template-columns: 1fr; } }
+    @media(max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
 
-    /* ── Chart card ──────────────────────────────────────────────────────── */
+    /* ── Main chart card ── */
     .chart-card {
-      background   : var(--surface);
-      border       : 1px solid var(--border);
-      border-radius: 14px;
-      padding      : 1.8rem;
-      animation    : fadeUp .4s .2s ease both;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.75rem; box-shadow: var(--shadow-sm);
     }
     .card-title {
-      font-family   : var(--font-head);
-      font-size     : .7rem;
-      font-weight   : 600;
-      letter-spacing: .14em;
-      color         : var(--cyan-dim);
-      text-transform: uppercase;
-      margin-bottom : 1.5rem;
-      padding-bottom: .7rem;
-      border-bottom : 1px solid var(--border);
-      display       : flex;
-      justify-content: space-between;
-      align-items   : center;
+      font-family: var(--font-head); font-size: 1rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .chart-wrap { position: relative; height: 280px; }
+    .card-title-sub { font-size: .8125rem; font-weight: 400; color: var(--muted); font-family: var(--font-body); }
+    .chart-wrap { position: relative; height: 280px; margin-bottom: 1.5rem; }
 
-    /* ── Candidate rows ──────────────────────────────────────────────────── */
-    .results-list { display: flex; flex-direction: column; gap: .8rem; margin-top: 1.5rem; }
+    /* ── Candidate result rows ── */
+    .results-list { display: flex; flex-direction: column; gap: .75rem; }
     .result-row {
-      display      : flex;
-      align-items  : center;
-      gap          : .8rem;
-      padding      : .8rem 1rem;
-      background   : var(--surface2);
-      border-radius: 8px;
-      border       : 1px solid var(--border);
-      transition   : border-color .2s;
+      display: flex; align-items: center; gap: .875rem;
+      padding: .875rem 1rem; background: var(--surface2);
+      border-radius: 10px; border: 1.5px solid var(--border);
+      transition: border-color .2s, box-shadow .2s;
     }
-    .result-row.winner { border-color: rgba(0,255,136,.35); background: rgba(0,255,136,.04); }
-    .result-rank { font-family: var(--font-head); font-size: .65rem; font-weight: 600; color: var(--muted); width: 20px; flex-shrink: 0; }
-    .result-rank.first { color: var(--amber); }
-    .result-symbol { font-size: 1.3rem; flex-shrink: 0; }
+    .result-row:hover { border-color: var(--navy); box-shadow: var(--shadow-md); }
+    .result-row.winner { border-color: rgba(22,163,74,.4); background: var(--green-dim); }
+    .result-rank { font-family: var(--font-head); font-size: .75rem; font-weight: 700; color: var(--muted); width: 24px; flex-shrink: 0; }
+    .result-rank.first { color: var(--amber); font-size: 1.1rem; }
+    .result-symbol { font-size: 1.5rem; flex-shrink: 0; }
     .result-info { flex: 1; min-width: 0; }
-    .result-name  { font-size: .8rem; font-weight: 500; color: var(--text); }
-    .result-party { font-size: .68rem; color: var(--muted); }
-    .result-bar-wrap { flex: 1; }
-    .result-bar {
-      height: 6px;
-      background: var(--surface);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: .2rem;
-    }
-    .result-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      background: var(--cyan);
-      transition: width 1s ease;
-    }
+    .result-name  { font-size: .9rem; font-weight: 600; color: var(--ink); font-family: var(--font-head); }
+    .result-party { font-size: .8rem; color: var(--text-2); }
+    .result-bar-wrap { flex: 1.5; }
+    .result-bar { height: 7px; background: var(--surface3); border-radius: 4px; overflow: hidden; margin-bottom: .3rem; }
+    .result-bar-fill { height: 100%; border-radius: 4px; background: var(--navy); transition: width 1.2s cubic-bezier(.22,1,.36,1); }
     .result-row.winner .result-bar-fill { background: var(--green); }
-    .result-pct { font-size: .68rem; color: var(--muted); text-align: right; }
-    .result-votes { font-family: var(--font-head); font-size: .78rem; color: var(--text); white-space: nowrap; }
+    .result-pct { font-size: .75rem; color: var(--muted); text-align: right; }
+    .result-votes { font-family: var(--font-head); font-size: .9rem; font-weight: 700; color: var(--ink); white-space: nowrap; min-width: 50px; text-align: right; }
 
-    /* ── Right sidebar ───────────────────────────────────────────────────── */
+    /* ── Right sidebar ── */
     .side-col { display: flex; flex-direction: column; gap: 1rem; }
 
     .side-card {
-      background   : var(--surface);
-      border       : 1px solid var(--border);
-      border-radius: 12px;
-      padding      : 1.4rem;
-      animation    : fadeUp .4s .3s ease both;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.4rem; box-shadow: var(--shadow-sm);
     }
+    .side-card-title { font-family: var(--font-head); font-size: .9rem; font-weight: 600; color: var(--ink); margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 1px solid var(--border); }
 
     /* Winner card */
-    .winner-card { border-color: rgba(0,255,136,.3); background: rgba(0,255,136,.04); }
-    .winner-symbol { font-size: 2.5rem; display: block; margin-bottom: .6rem; }
-    .winner-name   { font-family: var(--font-head); font-size: .85rem; font-weight: 600; color: var(--green); letter-spacing: .12em; margin-bottom: .3rem; }
-    .winner-party  { font-size: .72rem; color: var(--muted); margin-bottom: .6rem; }
-    .winner-votes  { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--green); }
-    .winner-label  { font-size: .62rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .winner-card { border-color: rgba(22,163,74,.3); background: linear-gradient(135deg, var(--green-dim), var(--surface)); }
+    .winner-trophy { font-size: 2.5rem; display: block; margin-bottom: .6rem; }
+    .winner-name  { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--green); margin-bottom: .25rem; }
+    .winner-party { font-size: .8125rem; color: var(--text-2); margin-bottom: .75rem; }
+    .winner-votes-big { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; color: var(--green); }
+    .winner-votes-label { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .winner-pct { display: inline-block; margin-top: .4rem; padding: .2rem .65rem; border-radius: 20px; background: rgba(22,163,74,.15); color: var(--green); font-size: .8rem; font-weight: 600; border: 1px solid rgba(22,163,74,.25); }
 
     /* Gender stats */
-    .gender-row { display: flex; gap: .8rem; margin-top: .8rem; }
-    .gender-item { flex: 1; text-align: center; padding: .8rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
-    .gender-num  { font-family: var(--font-head); font-size: 1rem; font-weight: 600; color: var(--cyan); display: block; }
-    .gender-lbl  { font-size: .62rem; color: var(--muted); }
+    .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
+    .gender-item { text-align: center; padding: .9rem .75rem; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+    .gender-num { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; color: var(--navy); display: block; }
+    .gender-lbl { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 
-    /* Not started notice */
-    .notice {
-      text-align: center;
-      padding: 3rem 1.5rem;
-      color: var(--muted);
-      font-size: .82rem;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      margin-top: 1rem;
+    /* Schedule info */
+    .schedule-info-rows { display: flex; flex-direction: column; gap: .5rem; }
+    .sch-row { display: flex; justify-content: space-between; align-items: center; font-size: .8125rem; }
+    .sch-key { color: var(--muted); }
+    .sch-val { color: var(--text); font-weight: 500; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .2rem .6rem; border-radius: 20px; font-size: .75rem; font-weight: 600;
     }
-    .notice h3 { font-family: var(--font-head); color: var(--amber); font-size: .9rem; margin-bottom: .6rem; letter-spacing: .12em; }
+    .status-pill.active  { color: var(--green); background: var(--green-dim); border: 1px solid rgba(22,163,74,.3); }
+    .status-pill.inactive { color: var(--amber); background: var(--amber-dim); border: 1px solid rgba(217,119,6,.3); }
+    .status-pill.ended   { color: var(--red);   background: var(--red-dim);   border: 1px solid rgba(220,38,38,.3); }
+    .s-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .s-dot.pulse { animation: livePulse 1.5s ease-in-out infinite; }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* Not public notice */
+    .notice-box {
+      background: var(--surface); border: 1.5px dashed var(--border);
+      border-radius: 14px; padding: 3.5rem 2rem; text-align: center;
+      animation: fadeUp .4s .14s ease both;
     }
+    .notice-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+    .notice-title { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; color: var(--amber); margin-bottom: .5rem; }
+    .notice-sub { color: var(--text-2); font-size: .9375rem; line-height: 1.7; }
 
-    footer { text-align: center; padding: 1.2rem; color: var(--muted); font-size: .7rem; border-top: 1px solid var(--border); }
+    /* Turnout bar */
+    .turnout-wrap { margin-top: .75rem; }
+    .turnout-labels { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); margin-bottom: .4rem; }
+    .turnout-track { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+    .turnout-fill { height: 100%; background: var(--navy); border-radius: 4px; transition: width 1.2s cubic-bezier(.22,1,.36,1); }
+
+    footer { text-align: center; padding: 1.25rem; color: var(--muted); font-size: .8125rem; border-top: 1px solid var(--border); background: var(--surface); }
   </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">E<span>·</span>VOTE</a>
+  <a class="nav-logo" href="index.html">E<em>·</em>Vote</a>
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="vote.html">Vote</a>
     <a href="result.html" class="active">Results</a>
+    <a href="admin/index.html" class="nav-admin">Admin ↗</a>
   </div>
 </nav>
 
 <main>
 
-  <div class="live-row">
+  <!-- Page header -->
+  <div class="page-header-row">
     <div>
-      <p class="page-title">Election Results</p>
+      <h1 class="page-title">Election Results</h1>
       <p class="page-sub">Live vote count — updates every 5 seconds</p>
     </div>
-    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:.4rem">
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem">
       <div class="live-badge"><div class="live-dot"></div> LIVE</div>
       <span id="last-update">Updating now...</span>
     </div>
@@ -297,21 +250,22 @@
     </div>
   </div>
 
-  <!-- Not public notice (hidden by default) -->
-  <div id="not-public-notice" class="notice" style="display:none">
-    <h3>⏳ Results Not Public Yet</h3>
-    <p>Results will appear here after the voting schedule starts or ends.</p>
+  <!-- Not public notice -->
+  <div id="not-public-notice" class="notice-box" style="display:none">
+    <span class="notice-icon">⏳</span>
+    <h2 class="notice-title">Results Not Public Yet</h2>
+    <p class="notice-sub">Results will be visible once the voting schedule starts or ends.</p>
   </div>
 
-  <!-- Main content -->
+  <!-- Main results content -->
   <div class="content-grid" id="results-content" style="display:none">
 
-    <!-- Chart + list -->
+    <!-- Left: Chart + list -->
     <div>
       <div class="chart-card">
         <div class="card-title">
           <span>Vote Distribution</span>
-          <span id="total-votes-label" style="color:var(--muted);font-size:.68rem"></span>
+          <span class="card-title-sub" id="total-votes-label">-- total votes</span>
         </div>
         <div class="chart-wrap">
           <canvas id="results-chart"></canvas>
@@ -320,23 +274,26 @@
       </div>
     </div>
 
-    <!-- Side -->
+    <!-- Right: Sidebar -->
     <div class="side-col">
 
-      <!-- Winner -->
+      <!-- Winner card (hidden until results available) -->
       <div class="side-card winner-card" id="winner-card" style="display:none">
-        <div class="card-title">🏆 Leading Candidate</div>
-        <span class="winner-symbol" id="w-symbol">🗳️</span>
+        <div class="side-card-title">🏆 Leading Candidate</div>
+        <span class="winner-trophy" id="w-symbol">🗳️</span>
         <p class="winner-name"  id="w-name">--</p>
         <p class="winner-party" id="w-party">--</p>
-        <span class="winner-votes" id="w-votes">0</span>
-        <span class="winner-label">votes</span>
+        <div style="margin-top:.5rem">
+          <span class="winner-votes-big" id="w-votes">0</span>
+          <span class="winner-votes-label"> votes</span>
+        </div>
+        <span class="winner-pct" id="w-pct">0%</span>
       </div>
 
       <!-- Voter stats -->
       <div class="side-card">
-        <div class="card-title">Voter Stats</div>
-        <div class="gender-row">
+        <div class="side-card-title">Voter Breakdown</div>
+        <div class="gender-grid">
           <div class="gender-item">
             <span class="gender-num" id="s-male">--</span>
             <span class="gender-lbl">Male</span>
@@ -346,7 +303,23 @@
             <span class="gender-lbl">Female</span>
           </div>
         </div>
-        <div style="margin-top:1rem; font-size:.7rem; color:var(--muted); line-height:1.8" id="schedule-info"></div>
+        <div class="turnout-wrap">
+          <div class="turnout-labels">
+            <span>Turnout</span>
+            <span id="turnout-pct-lbl">0%</span>
+          </div>
+          <div class="turnout-track">
+            <div class="turnout-fill" id="turnout-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule info -->
+      <div class="side-card">
+        <div class="side-card-title">Voting Schedule</div>
+        <div class="schedule-info-rows" id="schedule-info-rows">
+          <div style="color:var(--muted);font-size:.8125rem">Loading schedule...</div>
+        </div>
       </div>
 
     </div>
@@ -357,16 +330,23 @@
 <footer>© 2025 E-Voting System · Secure · Transparent · Digital</footer>
 
 <script>
-  const API    = "http://localhost:5000/api";
-  let chart    = null;
+  const API   = "http://localhost:5000/api";
+  let chart   = null;
   let chartInit = false;
-  const COLORS = ["#00eaff","#00ff88","#ffb300","#ff6b9d","#a78bfa","#fb923c","#34d399","#60a5fa"];
 
-  const symbolMap = {
+  const COLORS = [
+    "#1a2744","#2563eb","#16a34a","#d97706",
+    "#dc2626","#7c3aed","#0891b2","#be185d"
+  ];
+  const SYMBOL_MAP = {
     bat:"🏏", arrow:"🏹", book:"📚", lion:"🦁", tiger:"🐯",
     star:"⭐", flag:"🚩", torch:"🔦", key:"🗝️", scale:"⚖️",
-    tractor:"🚜", wheel:"☸️"
+    tractor:"🚜", wheel:"☸️", flower:"🌸", moon:"🌙",
   };
+
+  function getEmoji(sym) {
+    return SYMBOL_MAP[sym?.toLowerCase()] || "🗳️";
+  }
 
   async function loadResults() {
     try {
@@ -381,49 +361,65 @@
       renderResults(rData);
 
       document.getElementById("last-update").textContent =
-        "Last updated: " + new Date().toLocaleTimeString();
+        "Last updated: " + new Date().toLocaleTimeString("en-PK");
     } catch(e) {
       document.getElementById("last-update").textContent = "Update failed — check backend";
     }
   }
 
   function updateStats(s) {
-    setText("s-total-voters", s.total_voters);
-    setText("s-voted",        s.total_voted);
-    setText("s-not-voted",    s.not_voted);
+    setText("s-total-voters", fmt(s.total_voters));
+    setText("s-voted",        fmt(s.total_voted));
+    setText("s-not-voted",    fmt(s.not_voted));
     setText("s-turnout",      s.turnout_percent + "%");
-    setText("s-male",         s.male_voted);
-    setText("s-female",       s.female_voted);
+    setText("s-male",         fmt(s.male_voted));
+    setText("s-female",       fmt(s.female_voted));
 
+    // Turnout bar
+    const pct = s.turnout_percent || 0;
+    document.getElementById("turnout-pct-lbl").textContent = pct + "%";
+    document.getElementById("turnout-fill").style.width    = pct + "%";
+
+    // Schedule info
+    const rows = document.getElementById("schedule-info-rows");
     if (s.schedule) {
-      const start = new Date(s.schedule.start).toLocaleString();
-      const end   = new Date(s.schedule.end).toLocaleString();
-      document.getElementById("schedule-info").innerHTML =
-        `<b style="color:var(--cyan-dim)">Schedule</b><br>Start: ${start}<br>End: ${end}<br>Status: <span style="color:${s.voting_active ? "var(--green)" : "var(--amber)"}">${s.voting_active ? "Active ✓" : "Inactive"}</span>`;
+      const start = new Date(s.schedule.start).toLocaleString("en-PK", {dateStyle:"medium",timeStyle:"short"});
+      const end   = new Date(s.schedule.end).toLocaleString("en-PK", {dateStyle:"medium",timeStyle:"short"});
+      const pillCls = s.voting_active ? "active" : (new Date() > new Date(s.schedule.end) ? "ended" : "inactive");
+      const pillTxt = s.voting_active ? "Active" : (new Date() > new Date(s.schedule.end) ? "Ended" : "Upcoming");
+      rows.innerHTML = `
+        <div class="sch-row">
+          <span class="sch-key">Status</span>
+          <span class="status-pill ${pillCls}"><span class="s-dot ${pillCls === 'active' ? 'pulse' : ''}"></span>${pillTxt}</span>
+        </div>
+        <div class="sch-row"><span class="sch-key">Start</span><span class="sch-val">${start}</span></div>
+        <div class="sch-row"><span class="sch-key">End</span><span class="sch-val">${end}</span></div>
+      `;
+    } else {
+      rows.innerHTML = `<div style="color:var(--muted);font-size:.8125rem">Schedule not set by admin</div>`;
     }
   }
 
   function renderResults(data) {
     if (!data.results_public) {
       document.getElementById("not-public-notice").style.display = "block";
-      document.getElementById("results-content").style.display  = "none";
+      document.getElementById("results-content").style.display   = "none";
       return;
     }
 
     document.getElementById("not-public-notice").style.display = "none";
-    document.getElementById("results-content").style.display  = "grid";
+    document.getElementById("results-content").style.display   = "grid";
 
-    const total = data.total_votes || 0;
-    setText("s-total-votes", total);
-    document.getElementById("total-votes-label").textContent = `${total} total votes`;
+    const total   = data.total_votes || 0;
+    setText("s-total-votes", fmt(total));
+    document.getElementById("total-votes-label").textContent = fmt(total) + " total votes";
 
     const results = data.results || [];
+    const labels  = results.map(r => r.name);
+    const votes   = results.map(r => r.votes || 0);
+    const colors  = results.map((_, i) => COLORS[i % COLORS.length]);
 
     // Chart
-    const labels = results.map(r => r.name);
-    const votes  = results.map(r => r.votes || 0);
-    const colors = results.map((_, i) => COLORS[i % COLORS.length]);
-
     if (!chartInit) {
       const ctx = document.getElementById("results-chart").getContext("2d");
       chart = new Chart(ctx, {
@@ -431,35 +427,36 @@
         data: {
           labels,
           datasets: [{
-            data            : votes,
-            backgroundColor : colors.map(c => c + "33"),
-            borderColor     : colors,
-            borderWidth     : 1.5,
-            borderRadius    : 6,
-            hoverBackgroundColor: colors.map(c => c + "66"),
+            data: votes,
+            backgroundColor: colors.map(c => hexToRgba(c, .12)),
+            borderColor    : colors,
+            borderWidth    : 2,
+            borderRadius   : 6,
+            hoverBackgroundColor: colors.map(c => hexToRgba(c, .22)),
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
             x: {
-              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Inter", size: 11 } },
-              grid : { color: "rgba(0,234,255,.06)" }
+              ticks: { color: "#8a8a9a", font: { family: "DM Sans", size: 12 } },
+              grid : { color: "#e2ddd6" }
             },
             y: {
               beginAtZero: true,
-              ticks: { color: "rgba(255,255,255,.45)", font: { family: "Inter", size: 11 }, stepSize: 1 },
-              grid : { color: "rgba(0,234,255,.06)" }
+              ticks: { color: "#8a8a9a", font: { family: "DM Sans", size: 12 }, stepSize: 1 },
+              grid : { color: "#e2ddd6" }
             }
           }
         }
       });
       chartInit = true;
     } else {
-      chart.data.labels = labels;
-      chart.data.datasets[0].data = votes;
+      chart.data.labels                    = labels;
+      chart.data.datasets[0].data          = votes;
+      chart.data.datasets[0].backgroundColor = colors.map(c => hexToRgba(c, .12));
+      chart.data.datasets[0].borderColor     = colors;
       chart.update("active");
     }
 
@@ -471,14 +468,16 @@
       const row = document.createElement("div");
       row.className = `result-row ${i === 0 && total > 0 ? "winner" : ""}`;
       row.innerHTML = `
-        <span class="result-rank ${i === 0 ? "first" : ""}">${i === 0 ? "🥇" : "#" + (i+1)}</span>
-        <span class="result-symbol">${symbolMap[r.symbol?.toLowerCase()] || "🗳️"}</span>
+        <span class="result-rank ${i === 0 ? "first" : ""}">${i === 0 ? "🥇" : "#"+(i+1)}</span>
+        <span class="result-symbol">${getEmoji(r.symbol)}</span>
         <div class="result-info">
           <div class="result-name">${r.name}</div>
           <div class="result-party">${r.party}</div>
         </div>
         <div class="result-bar-wrap">
-          <div class="result-bar"><div class="result-bar-fill" style="width:${pct}%"></div></div>
+          <div class="result-bar">
+            <div class="result-bar-fill" style="width:${pct}%"></div>
+          </div>
           <div class="result-pct">${pct}%</div>
         </div>
         <span class="result-votes">${r.votes ?? "--"}</span>
@@ -486,20 +485,28 @@
       list.appendChild(row);
     });
 
-    // Winner
+    // Winner card
     if (data.winner) {
       const w = data.winner;
       document.getElementById("winner-card").style.display = "block";
-      document.getElementById("w-symbol").textContent = symbolMap[results.find(r=>r.id===w.id)?.symbol?.toLowerCase()] || "🗳️";
+      document.getElementById("w-symbol").textContent = getEmoji(results.find(r => r.id === w.id)?.symbol);
       document.getElementById("w-name").textContent   = w.name;
       document.getElementById("w-party").textContent  = w.party;
-      document.getElementById("w-votes").textContent  = w.votes;
+      document.getElementById("w-votes").textContent  = fmt(w.votes);
+      document.getElementById("w-pct").textContent    = (w.percentage || 0) + "%";
     }
   }
 
   function setText(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val ?? "--";
+  }
+  function fmt(n) { return n != null ? Number(n).toLocaleString("en-PK") : "--"; }
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
   }
 
   loadResults();

@@ -222,17 +222,23 @@
     });
 
     // ── BWAPI Ping ────────────────────────────────────────────────────────
+    // NAYA — backend proxy se check
     async function pingBWAPI() {
-      log("[TEST] Pinging BWAPI...", "inf");
-      try {
-        const res = await fetch("https://localhost:8443", { mode: "no-cors" });
-        // no-cors means we can't read response, but no error = alive
-        setBadge("bwapi-badge", "✓ BWAPI Online", "green");
-        log("[OK] BWAPI is responding on port 9734", "ok");
-      } catch(e) {
-        setBadge("bwapi-badge", "✗ BWAPI Offline", "red");
-        log("[FAIL] BWAPI not found — is FPWebHost.exe running?", "err");
-      }
+        log("[TEST] Pinging BWAPI via backend proxy...", "inf");
+        try {
+            const res  = await fetch("http://localhost:5000/api/fp/status");
+            const data = await res.json();
+            if (data.bwapi_alive) {
+                setBadge("bwapi-badge", "✓ BWAPI Online", "green");
+                log(`[OK] BWAPI alive — mode: ${data.mode}`, "ok");
+            } else {
+                setBadge("bwapi-badge", "✗ BWAPI Offline", "red");
+                log("[FAIL] BWAPI offline — FPWebHost.exe check karo", "err");
+            }
+        } catch(e) {
+            setBadge("bwapi-badge", "✗ Check Failed", "red");
+            log(`[ERR] Backend bhi nahi mila: ${e.message}`, "err");
+        }
     }
 
     // ── Backend Ping ──────────────────────────────────────────────────────

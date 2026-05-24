@@ -86,3 +86,57 @@ def fp_status():
         "message"    : "SecuGen BWAPI chal rahi hai ✓" if alive
                        else "BWAPI offline — fallback mode active (dev only)"
     }), 200
+
+# ─── POST /api/fp/capture ─────────────────────────────────────────────────────
+@fp_bp.route("/capture", methods=["POST"])
+def capture_fingerprint():
+    """
+    Backend proxy — SecuGen BWAPI se fingerprint capture karo.
+    Browser directly BWAPI call nahi kar sakta (SSL/CORS issues),
+    isliye Flask middle-man ban ke kaam karta hai.
+
+    Response:
+      { "success": true, "template": "<base64>" }
+      { "error": "..." }
+    """
+    from fingerprint import _bwapi_post
+
+    data = request.get_json(silent=True) or {}
+    timeout = data.get("timeout", 10000)
+
+    result = _bwapi_post("SGIFPCapture", {
+        "Timeout"       : timeout,
+        "TemplateFormat": "ISO",
+        "licstr"        : "",
+    })
+
+    if result is None:
+        return jsonify({
+            "error": "SecuGen service se connection nahi — FPWebHost.exe chal raha hai?"
+        }), 503
+
+    error_code = result.get("ErrorCode", -1)
+
+    if error_code == 0:
+        template = result.get("TemplateBase64", "")
+        if not template:
+            return jsonify({"error": "Template empty aaya — ungli dobara rakho"}), 400
+        return jsonify({
+            "success" : True,
+            "template": template,
+        }), 200
+
+    # Error codes mapping
+    error_messages = {
+        51 : "Device busy — thodi der baad try karo",
+        52 : "Capture timeout — ungli sensor par rakho",
+        53 : "Capture timeout — ungli sensor par rakho",
+        54 : "Finger nahi mila — ungli sensor par rakho",
+        55 : "Device connected nahi — USB check karo",
+        56 : "Driver error — device reconnect karo",
+        59 : "Finger nahi mila — ungli sensor par rakho",
+        10004: "Origin error — server config check karo",
+    }
+    msg = error_messages.get(int(error_code),
+                             f"BWAPI error code: {error_code}")
+    return jsonify({"error": msg, "error_code": error_code}), 400

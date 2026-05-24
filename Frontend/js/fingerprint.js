@@ -134,48 +134,42 @@ const BWAPI_ORIGIN = "http://localhost:5000";
    * @private
    */
   async function _callBWAPI() {
+    // Browser → Flask backend → SecuGen BWAPI
+    // Direct browser call SSL/CORS issues deta tha, isliye backend proxy use kar rahe hain
     const controller = new AbortController();
     const timeoutId  = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
-      const res = await fetch(CAPTURE_URL, {
-        method : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Origin"      : window.location.origin,  // ← fixes ErrorCode 10004
-        },
-        body: JSON.stringify({
-          Timeout       : 10000,
-          TemplateFormat: "ISO",
-          licstr        : "",
-        }),
-        signal: controller.signal,
-      });
+        const res = await fetch(`${BACKEND_BASE}/fp/capture`, {
+            method     : "POST",
+            credentials: "include",
+            headers    : { "Content-Type": "application/json" },
+            body       : JSON.stringify({ timeout: 10000 }),
+            signal     : controller.signal,
+        });
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (!res.ok) throw new Error(`BWAPI HTTP ${res.status}`);
+        const data = await res.json();
 
-      const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || `Server error ${res.status}`);
+        }
 
-      if (data.ErrorCode !== 0 && data.ErrorCode !== "0") {
-        throw new Error(`BWAPI error ${data.ErrorCode}`);
-      }
+        if (!data.template) {
+            throw new Error("Template nahi mila — dobara try karo");
+        }
 
-      if (!data.TemplateBase64) {
-        throw new Error("No template — place finger firmly on scanner");
-      }
-
-      return data.TemplateBase64;
+        return data.template;
 
     } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === "AbortError") throw new Error("Timeout — place finger and try again");
-      throw err;
+        clearTimeout(timeoutId);
+        if (err.name === "AbortError") {
+            throw new Error("Timeout — ungli rakho aur dobara try karo");
+        }
+        throw err;
     }
   }
-
-
   // ══════════════════════════════════════════════════════════════════════════
   // SECTION 3 — Verify (Server-side match)
   // ══════════════════════════════════════════════════════════════════════════

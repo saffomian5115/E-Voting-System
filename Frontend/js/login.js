@@ -1,20 +1,18 @@
 /**
- * login.js — Module 3: Login Logic
- * Email + Password + Fingerprint — teeno zaroori
+ * login.js — Updated Login Logic
+ * CNIC + Fingerprint only — no email/password
  */
 
 const API = "http://localhost:5000/api";
 
 // ── On page load ──────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Agar pehle se logged in hai to redirect karo
   checkExistingSession();
 
-  // Fingerprint scanner init
   FingerprintScanner.init("fp-container");
 
-  // FP status badge
-  document.addEventListener("fp:statusChange", (e) => {
+  // FP status badge + auto-login on successful scan
+  document.addEventListener("fp:statusChange", async (e) => {
     const badge  = document.getElementById("fp-status-badge");
     const hidden = document.getElementById("fp-template-output");
 
@@ -22,41 +20,54 @@ window.addEventListener("DOMContentLoaded", () => {
       hidden.value      = e.detail.template;
       badge.textContent = "✓ Fingerprint Ready";
       badge.className   = "ready";
+
+      // Auto-trigger login if CNIC is filled
+      const cnic = document.getElementById("cnic").value.trim();
+      if (cnic && /^\d{5}-\d{7}-\d$/.test(cnic)) {
+        document.getElementById("auto-login-indicator").classList.add("show");
+        await loginUser();
+        document.getElementById("auto-login-indicator").classList.remove("show");
+      }
     } else if (e.detail.status === "failed" || e.detail.status === "error") {
       hidden.value      = "";
-      badge.textContent = "✗ Scan fail — dobara try karo";
+      badge.textContent = "✗ Scan failed — try again";
       badge.className   = "failed";
     } else {
       hidden.value      = "";
-      badge.textContent = "Scan nahi hua";
+      badge.textContent = "Not scanned";
       badge.className   = "";
     }
   });
 
-  // Enter key support
-  document.getElementById("password").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") loginUser();
-  });
+  // CNIC auto-format
+  document.getElementById("cnic").addEventListener("input", formatCNIC);
 });
+
+
+// ── CNIC formatter ────────────────────────────────────────────────────────────
+function formatCNIC(e) {
+  let v   = e.target.value.replace(/\D/g, "");
+  let out = "";
+  if (v.length > 0)  out  = v.slice(0, 5);
+  if (v.length > 5)  out += "-" + v.slice(5, 12);
+  if (v.length > 12) out += "-" + v.slice(12, 13);
+  e.target.value = out;
+}
 
 
 // ── Session check ─────────────────────────────────────────────────────────────
 async function checkExistingSession() {
   try {
-    const res = await fetch(`${API}/me`, { credentials: "include" });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.logged_in) {
-        window.location.href = "vote.html";
-      }
+    const res  = await fetch(`${API}/me`, { credentials: "include" });
+    const data = await res.json();
+    if (data.logged_in) {
+      window.location.href = "vote.html";
     }
-  } catch (e) {
-    // Backend down — koi baat nahi, login page pe rehne do
-  }
+  } catch(e) { /* Backend down — stay on login page */ }
 }
 
 
-// ── Field validation helpers ──────────────────────────────────────────────────
+// ── Field validation ──────────────────────────────────────────────────────────
 function setError(fieldId, msg) {
   const fg  = document.getElementById(`fg-${fieldId}`);
   const err = document.getElementById(`err-${fieldId}`);
@@ -66,7 +77,7 @@ function setError(fieldId, msg) {
 }
 
 function clearAllErrors() {
-  ["email", "password"].forEach((id) => {
+  ["cnic"].forEach((id) => {
     const fg  = document.getElementById(`fg-${id}`);
     const err = document.getElementById(`err-${id}`);
     if (fg)  fg.classList.remove("has-error");
@@ -76,33 +87,27 @@ function clearAllErrors() {
 
 function validateForm() {
   clearAllErrors();
-  let ok = true;
+  const CNIC_RE = /^\d{5}-\d{7}-\d{1}$/;
+  const cnic    = document.getElementById("cnic").value.trim();
 
-  const email    = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !email.includes("@")) {
-    setError("email", "Valid email dalen");
-    ok = false;
+  if (!CNIC_RE.test(cnic)) {
+    setError("cnic", "Format: 12345-1234567-1");
+    return false;
   }
-  if (!password || password.length < 8) {
-    setError("password", "Password 8 characters se zyada hona chahiye");
-    ok = false;
-  }
-  return ok;
+  return true;
 }
 
 
 // ── Main login function ───────────────────────────────────────────────────────
 async function loginUser() {
   if (!validateForm()) {
-    showToast("Form mein errors hain — theek karo", "err");
+    showToast("Please enter a valid CNIC", "err");
     return;
   }
 
   const fpTemplate = document.getElementById("fp-template-output").value;
   if (!fpTemplate) {
-    showToast("Fingerprint scan karo — dayen taraf button dabao", "err");
+    showToast("Please scan your fingerprint first", "err");
     return;
   }
 
@@ -112,8 +117,7 @@ async function loginUser() {
 
   try {
     const payload = {
-      email      : document.getElementById("email").value.trim().toLowerCase(),
-      password   : document.getElementById("password").value,
+      cnic       : document.getElementById("cnic").value.trim(),
       fp_template: fpTemplate,
     };
 
@@ -129,19 +133,18 @@ async function loginUser() {
     if (data.success) {
       showToast(`✓ ${data.message}`, "ok");
       setTimeout(() => {
-        window.location.href = data.voter.hasVoted ? "result.html" : "vote.html";
-      }, 1500);
+        window.location.href = data.voter?.hasVoted ? "result.html" : "vote.html";
+      }, 1200);
     } else {
-      showToast(data.error || "Login fail ho gaya", "err");
-      // FP reset karo taake dobara scan kar sake
+      showToast(data.error || "Login failed", "err");
       FingerprintScanner.reset();
       document.getElementById("fp-template-output").value = "";
-      document.getElementById("fp-status-badge").textContent = "Scan nahi hua";
-      document.getElementById("fp-status-badge").className = "";
+      const badge = document.getElementById("fp-status-badge");
+      badge.textContent = "Not scanned";
+      badge.className   = "";
     }
-
-  } catch (err) {
-    showToast("Server se connection nahi — backend chal raha hai?", "err");
+  } catch(err) {
+    showToast("Cannot connect to server — is backend running?", "err");
     console.error("[LOGIN]", err);
   } finally {
     btn.disabled = false;
@@ -150,15 +153,12 @@ async function loginUser() {
 }
 
 
-// ── Toast notification ────────────────────────────────────────────────────────
+// ── Toast ─────────────────────────────────────────────────────────────────────
 let _toastTimer = null;
-
 function showToast(msg, type = "ok") {
   const el = document.getElementById("toast");
   el.textContent = msg;
   el.className   = `show ${type}`;
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => {
-    el.classList.remove("show");
-  }, 3500);
+  _toastTimer = setTimeout(() => el.classList.remove("show"), 3500);
 }

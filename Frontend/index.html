@@ -4,600 +4,239 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Voting System — Secure Digital Elections</title>
-  <!-- Improved Fonts: Clean, modern, and friendly -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg       : #03070e;
-      --surface  : #070f1c;
-      --surface2 : #0a1525;
-      --border   : rgba(0,234,255,.1);
-      --border-h : rgba(0,234,255,.35);
-      --cyan     : #00eaff;
-      --cyan-dim : rgba(0,234,255,.65);
-      --green    : #00ff88;
-      --text     : rgba(255,255,255,.88);
-      --muted    : rgba(255,255,255,.38);
-      /* New cleaner font stack */
-      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      --font-head: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+      --bg         : #f8f7f4;
+      --bg-alt     : #f0ede8;
+      --surface    : #ffffff;
+      --surface2   : #f5f3ef;
+      --border     : #e2ddd6;
+      --navy       : #1a2744;
+      --navy-mid   : #2c3e6b;
+      --accent     : #2563eb;
+      --accent-dim : rgba(37,99,235,.1);
+      --green      : #16a34a;
+      --amber      : #d97706;
+      --red        : #dc2626;
+      --text       : #1c1c28;
+      --text-2     : #4a4a5a;
+      --muted      : #8a8a9a;
+      --ink        : #0f0f1a;
+      --font-body  : 'DM Sans', system-ui, sans-serif;
+      --font-head  : 'Fraunces', Georgia, serif;
+      --shadow-sm  : 0 1px 3px rgba(0,0,0,.06);
+      --shadow-md  : 0 4px 16px rgba(0,0,0,.08);
     }
 
     html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; font-size: 15px; }
 
-    body {
-      background : var(--bg);
-      color      : var(--text);
-      font-family: var(--font-body);
-      min-height : 100vh;
-      overflow-x : hidden;
-      font-weight: 400;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── Grid noise ── preserved exactly ──────────────────────────────────── */
-    body::before {
-      content : "";
-      position: fixed;
-      inset   : 0;
-      background:
-        repeating-linear-gradient(0deg, transparent, transparent 39px,
-          rgba(0,234,255,.018) 39px, rgba(0,234,255,.018) 40px),
-        repeating-linear-gradient(90deg, transparent, transparent 39px,
-          rgba(0,234,255,.018) 39px, rgba(0,234,255,.018) 40px);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── Navbar (unchanged structure, only text cleaned & font updated) ───── */
+    /* ── Navbar ── */
     nav {
-      display        : flex;
-      align-items    : center;
-      justify-content: space-between;
-      padding        : 1rem 2.5rem;
-      border-bottom  : 1px solid var(--border);
-      background     : rgba(3,7,14,.85);
-      backdrop-filter: blur(14px);
-      position       : sticky;
-      top            : 0;
-      z-index        : 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
     }
-    .nav-logo {
-      font-family   : var(--font-head);
-      font-size     : 1rem;
-      font-weight   : 600;
-      color         : var(--cyan);
-      letter-spacing: .2em;
-      text-decoration: none;
-    }
-    .nav-logo span { color: rgba(255,255,255,.5); }
-    .nav-links { display: flex; gap: 2rem; align-items: center; }
-    .nav-links a {
-      color          : var(--muted);
-      text-decoration: none;
-      font-size      : .78rem;
-      font-weight    : 500;
-      letter-spacing : .07em;
-      transition     : color .2s;
-    }
-    .nav-links a:hover { color: var(--cyan); }
-    .nav-cta {
-      padding      : .45rem 1.2rem;
-      border       : 1px solid var(--border-h);
-      border-radius: 6px;
-      color        : var(--cyan) !important;
-      background   : rgba(0,234,255,.07);
-      transition   : background .2s !important;
-    }
-    .nav-cta:hover { background: rgba(0,234,255,.16) !important; }
+    .nav-logo { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--navy); text-decoration: none; letter-spacing: -.01em; }
+    .nav-logo em { font-style: italic; color: var(--accent); }
+    .nav-links { display: flex; gap: .15rem; align-items: center; }
+    .nav-links a { color: var(--text-2); text-decoration: none; font-size: .875rem; font-weight: 500; padding: .4rem .75rem; border-radius: 6px; transition: background .15s, color .15s; }
+    .nav-links a:hover { background: var(--surface2); color: var(--ink); }
+    .nav-links a.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+    .nav-links a.nav-cta { background: var(--navy); color: #fff; margin-left: .5rem; }
+    .nav-links a.nav-cta:hover { background: var(--navy-mid); }
+    .nav-links a.nav-admin { color: var(--muted); font-size: .8125rem; border: 1px solid var(--border); }
+    .nav-links a.nav-admin:hover { color: var(--text); border-color: var(--text-2); background: var(--surface2); }
 
-    /* ── Hero ────────────────────────────────────────────────────────────── */
+    /* ── Hero ── */
     .hero {
-      position      : relative;
-      min-height    : 92vh;
-      display       : flex;
-      flex-direction: column;
-      align-items   : center;
-      justify-content: center;
-      text-align    : center;
-      padding       : 4rem 1.5rem;
-      z-index       : 1;
-      overflow      : hidden;
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 5rem 1.5rem 4rem;
+      background: linear-gradient(160deg, #fff 0%, var(--bg) 50%, var(--bg-alt) 100%);
+      position: relative; overflow: hidden;
     }
-
-    .hero::after {
-      content  : "";
-      position : absolute;
-      top      : 50%;
-      left     : 50%;
-      transform: translate(-50%, -50%);
-      width    : 700px;
-      height   : 400px;
-      background: radial-gradient(ellipse, rgba(0,234,255,.07) 0%, transparent 70%);
+    .hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,.06) 0%, transparent 70%);
       pointer-events: none;
     }
+    .hero::after {
+      content: ''; position: absolute; bottom: -40px; left: -40px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,39,68,.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 700px; text-align: center; position: relative; z-index: 1; animation: fadeUp .6s ease both; }
 
-    .hero-badge {
-      display      : inline-flex;
-      align-items  : center;
-      gap          : .5rem;
-      padding      : .35rem 1rem;
-      border       : 1px solid rgba(0,234,255,.2);
-      border-radius: 20px;
-      font-size    : .7rem;
-      font-weight  : 500;
-      color        : var(--cyan-dim);
-      letter-spacing: .12em;
-      margin-bottom: 2rem;
-      background   : rgba(0,234,255,.04);
-      animation    : fadeDown .6s ease both;
-    }
-    .hero-badge::before {
-      content     : "●";
-      color       : var(--green);
-      font-size   : .5rem;
-      animation   : blink 2s ease-in-out infinite;
-    }
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50%     { opacity: .2; }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-    .hero-title {
-      font-family   : var(--font-head);
-      font-size     : clamp(2.2rem, 6vw, 4.5rem);
-      font-weight   : 700;
-      letter-spacing: -0.02em;
-      line-height   : 1.2;
-      margin-bottom : 1.2rem;
-      animation     : fadeDown .6s .1s ease both;
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(37,99,235,.2); border-radius: 20px;
+      font-size: .8125rem; font-weight: 600; padding: .3rem .9rem;
+      letter-spacing: .03em; margin-bottom: 1.5rem;
     }
-    .hero-title .accent { color: var(--cyan); }
-    .hero-title .dim    { color: rgba(255,255,255,.3); font-weight: 500; }
+    .hero-tag::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    h1 {
+      font-family: var(--font-head); font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700; line-height: 1.15; letter-spacing: -.03em;
+      color: var(--ink); margin-bottom: 1.25rem;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    h1 .dim { color: var(--muted); font-weight: 300; }
 
     .hero-sub {
-      max-width    : 560px;
-      font-size    : .95rem;
-      font-weight  : 400;
-      color        : var(--muted);
-      line-height  : 1.7;
-      margin-bottom: 2.8rem;
-      animation    : fadeDown .6s .2s ease both;
+      font-size: 1.05rem; color: var(--text-2); line-height: 1.75;
+      max-width: 520px; margin: 0 auto 2.5rem;
     }
-
-    .hero-btns {
-      display  : flex;
-      gap      : 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      animation: fadeDown .6s .3s ease both;
-    }
-
+    .hero-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
-      padding      : .8rem 2rem;
-      border-radius: 7px;
-      border       : 1.5px solid var(--cyan);
-      background   : rgba(0,234,255,.12);
-      color        : var(--cyan);
-      font-family  : var(--font-head);
-      font-size    : .75rem;
-      font-weight  : 600;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      text-decoration: none;
-      cursor       : pointer;
-      transition   : background .25s, box-shadow .25s, transform .1s;
+      padding: .75rem 1.75rem; border-radius: 8px; background: var(--navy);
+      color: #fff; font-family: var(--font-body); font-size: .9375rem; font-weight: 600;
+      text-decoration: none; border: none; cursor: pointer; transition: background .2s, box-shadow .2s, transform .1s;
     }
-    .btn-primary:hover {
-      background: rgba(0,234,255,.22);
-      box-shadow: 0 0 24px rgba(0,234,255,.25);
-      transform : translateY(-2px);
-    }
+    .btn-primary:hover { background: var(--navy-mid); box-shadow: 0 6px 20px rgba(26,39,68,.25); transform: translateY(-1px); }
     .btn-secondary {
-      padding      : .8rem 2rem;
-      border-radius: 7px;
-      border       : 1px solid rgba(255,255,255,.12);
-      background   : transparent;
-      color        : rgba(255,255,255,.55);
-      font-family  : var(--font-head);
-      font-size    : .75rem;
-      font-weight  : 500;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition   : border-color .2s, color .2s;
+      padding: .75rem 1.75rem; border-radius: 8px; background: transparent;
+      color: var(--text-2); font-family: var(--font-body); font-size: .9375rem; font-weight: 500;
+      text-decoration: none; border: 1.5px solid var(--border); cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
     }
-    .btn-secondary:hover {
-      border-color: rgba(255,255,255,.35);
-      color       : rgba(255,255,255,.85);
-    }
+    .btn-secondary:hover { border-color: var(--navy); color: var(--navy); background: var(--surface); }
 
-    /* Particles unchanged */
-    .particles {
-      position: absolute;
-      inset   : 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .particle {
-      position     : absolute;
-      width        : 2px;
-      height       : 2px;
-      border-radius: 50%;
-      background   : var(--cyan);
-      opacity      : 0;
-      animation    : float linear infinite;
-    }
-    @keyframes float {
-      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
-      10%  { opacity: .6; }
-      90%  { opacity: .4; }
-      100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
-    }
-
-    .scroll-hint {
-      position : absolute;
-      bottom   : 2rem;
-      left     : 50%;
-      transform: translateX(-50%);
-      display  : flex;
-      flex-direction: column;
-      align-items: center;
-      gap     : .4rem;
-      color   : var(--muted);
-      font-size: .65rem;
-      letter-spacing: .1em;
-      animation: fadeDown .6s .8s ease both;
-    }
-    .scroll-line {
-      width    : 1px;
-      height   : 36px;
-      background: linear-gradient(to bottom, var(--cyan), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-    @keyframes scrollPulse {
-      0%,100% { opacity: .3; transform: scaleY(1); }
-      50%     { opacity: 1;  transform: scaleY(1.2); }
-    }
-
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Stats bar */
+    /* ── Stats bar ── */
     .stats-bar {
-      position  : relative;
-      z-index   : 1;
-      display   : flex;
-      justify-content: center;
-      gap       : 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: rgba(7,15,28,.6);
-      backdrop-filter: blur(8px);
+      background: var(--navy); color: #fff;
+      display: flex; justify-content: center;
     }
-    .stat-item {
-      flex       : 1;
-      max-width  : 220px;
-      padding    : 1.8rem 1rem;
-      text-align : center;
-      border-right: 1px solid var(--border);
-    }
+    .stat-item { flex: 1; max-width: 220px; padding: 1.75rem 1rem; text-align: center; border-right: 1px solid rgba(255,255,255,.1); }
     .stat-item:last-child { border-right: none; }
-    .stat-num {
-      font-family   : var(--font-head);
-      font-size     : 1.8rem;
-      font-weight   : 700;
-      color         : var(--cyan);
-      letter-spacing: .05em;
-      display       : block;
-      margin-bottom : .3rem;
-    }
-    .stat-label {
-      font-size: .68rem;
-      font-weight: 500;
-      color    : var(--muted);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
+    .stat-num { font-family: var(--font-head); font-size: 2rem; font-weight: 700; display: block; margin-bottom: .3rem; letter-spacing: -.02em; }
+    .stat-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .6; }
 
-    /* Sections */
-    section {
-      position: relative;
-      z-index : 1;
-      padding : 6rem 1.5rem;
-    }
-    .section-inner {
-      max-width: 1060px;
-      margin  : 0 auto;
-    }
-    .section-label {
-      font-size    : .68rem;
-      font-weight  : 600;
-      color        : var(--cyan-dim);
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      margin-bottom: .6rem;
-    }
-    .section-title {
-      font-family   : var(--font-head);
-      font-size     : clamp(1.3rem, 3vw, 2rem);
-      font-weight   : 700;
-      letter-spacing: -0.01em;
-      margin-bottom : .8rem;
-    }
-    .section-sub {
-      color    : var(--muted);
-      font-size: .88rem;
-      line-height: 1.7;
-      max-width: 480px;
-      margin-bottom: 3.5rem;
-    }
+    /* ── How it works section ── */
+    section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 1060px; margin: 0 auto; }
+    .section-label { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+    .section-title { font-family: var(--font-head); font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; color: var(--ink); letter-spacing: -.02em; margin-bottom: .6rem; }
+    .section-sub { color: var(--text-2); font-size: .9375rem; line-height: 1.75; margin-bottom: 3rem; max-width: 500px; }
 
-    /* How it works */
-    .steps-grid {
-      display             : grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap                 : 1.5rem;
-    }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
     .step-card {
-      background   : var(--surface);
-      border       : 1px solid var(--border);
-      border-radius: 14px;
-      padding      : 1.8rem 1.5rem;
-      position     : relative;
-      overflow     : hidden;
-      transition   : border-color .3s, transform .3s;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.75rem 1.5rem; position: relative; transition: box-shadow .25s, transform .25s;
     }
-    .step-card:hover {
-      border-color: rgba(0,234,255,.3);
-      transform   : translateY(-4px);
-    }
-    .step-card::before {
-      content  : "";
-      position : absolute;
-      top      : 0; left: 0; right: 0;
-      height   : 2px;
-      background: linear-gradient(to right, transparent, var(--cyan), transparent);
-      opacity  : 0;
-      transition: opacity .3s;
-    }
-    .step-card:hover::before { opacity: 1; }
+    .step-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
     .step-num {
-      font-family   : var(--font-head);
-      font-size     : 2.2rem;
-      font-weight   : 700;
-      color         : rgba(0,234,255,.12);
-      letter-spacing: .05em;
-      line-height   : 1;
-      margin-bottom : .8rem;
+      font-family: var(--font-head); font-size: 2.5rem; font-weight: 700;
+      color: var(--bg-alt); letter-spacing: -.04em; line-height: 1; margin-bottom: .75rem;
     }
-    .step-icon {
-      font-size    : 1.6rem;
-      margin-bottom: .8rem;
-      display      : block;
-    }
-    .step-title {
-      font-family   : var(--font-head);
-      font-size     : .8rem;
-      font-weight   : 600;
-      color         : var(--text);
-      letter-spacing: .1em;
-      margin-bottom : .5rem;
-      text-transform: uppercase;
-    }
-    .step-desc {
-      font-size  : .76rem;
-      font-weight: 400;
-      color      : var(--muted);
-      line-height: 1.7;
-    }
+    .step-icon { font-size: 1.75rem; display: block; margin-bottom: .75rem; }
+    .step-title { font-family: var(--font-head); font-size: .95rem; font-weight: 600; color: var(--ink); margin-bottom: .5rem; }
+    .step-desc { font-size: .875rem; color: var(--text-2); line-height: 1.7; }
 
-    /* Security features */
-    .features-section {
-      background: rgba(7,15,28,.5);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .features-grid {
-      display             : grid;
-      grid-template-columns: 1fr 1fr;
-      gap                 : 1.2rem;
-    }
+    /* ── Security features ── */
+    .features-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     @media(max-width:600px) { .features-grid { grid-template-columns: 1fr; } }
     .feature-item {
-      display   : flex;
-      gap       : 1rem;
-      padding   : 1.2rem;
-      background: var(--surface2);
-      border    : 1px solid var(--border);
-      border-radius: 10px;
-      transition: border-color .25s;
+      display: flex; gap: 1rem; padding: 1.25rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      transition: border-color .2s, box-shadow .2s;
     }
-    .feature-item:hover { border-color: rgba(0,234,255,.25); }
+    .feature-item:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,.08); }
     .feature-icon {
-      font-size   : 1.4rem;
-      flex-shrink : 0;
-      width       : 42px;
-      height      : 42px;
-      display     : flex;
-      align-items : center;
-      justify-content: center;
-      background  : rgba(0,234,255,.06);
-      border-radius: 8px;
-      border      : 1px solid var(--border);
+      font-size: 1.4rem; flex-shrink: 0; width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     }
-    .feature-body h4 {
-      font-family   : var(--font-head);
-      font-size     : .74rem;
-      font-weight   : 600;
-      letter-spacing: .08em;
-      color         : var(--text);
-      margin-bottom : .3rem;
-      text-transform: uppercase;
-    }
-    .feature-body p {
-      font-size  : .74rem;
-      font-weight: 400;
-      color      : var(--muted);
-      line-height: 1.6;
-    }
+    .feature-body h4 { font-size: .875rem; font-weight: 600; color: var(--ink); margin-bottom: .3rem; font-family: var(--font-body); }
+    .feature-body p  { font-size: .8125rem; color: var(--text-2); line-height: 1.65; }
 
-    /* CTA */
-    .cta-section {
-      text-align: center;
-    }
+    /* ── CTA ── */
+    .cta-section { text-align: center; background: var(--bg-alt); }
     .cta-box {
-      background   : var(--surface);
-      border       : 1px solid var(--border);
-      border-radius: 18px;
-      padding      : 4rem 2rem;
-      max-width    : 640px;
-      margin       : 0 auto;
-      position     : relative;
-      overflow     : hidden;
+      background: var(--navy); border-radius: 20px; padding: 4rem 2rem;
+      max-width: 620px; margin: 0 auto; position: relative; overflow: hidden;
     }
     .cta-box::before {
-      content  : "";
-      position : absolute;
-      top      : 0; left: 20%; right: 20%;
-      height   : 1px;
-      background: linear-gradient(to right, transparent, var(--cyan), transparent);
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #60a5fa, var(--accent));
     }
-    .cta-box h2 {
-      font-family   : var(--font-head);
-      font-size     : clamp(1.1rem, 3vw, 1.6rem);
-      font-weight   : 700;
-      letter-spacing: -0.02em;
-      margin-bottom : .8rem;
-    }
-    .cta-box p {
-      color        : var(--muted);
-      font-size    : .84rem;
-      line-height  : 1.7;
-      margin-bottom: 2rem;
-    }
-    .cta-btns {
-      display        : flex;
-      gap            : 1rem;
-      justify-content: center;
-      flex-wrap      : wrap;
-    }
+    .cta-box h2 { font-family: var(--font-head); font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; color: #fff; margin-bottom: .75rem; letter-spacing: -.02em; }
+    .cta-box p  { color: rgba(255,255,255,.65); font-size: .9375rem; line-height: 1.7; margin-bottom: 2rem; }
+    .cta-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-cta-primary { padding: .8rem 2rem; border-radius: 8px; background: #fff; color: var(--navy); font-weight: 600; font-size: .9375rem; text-decoration: none; font-family: var(--font-body); transition: box-shadow .2s; }
+    .btn-cta-primary:hover { box-shadow: 0 6px 20px rgba(255,255,255,.2); }
+    .btn-cta-secondary { padding: .8rem 2rem; border-radius: 8px; background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); font-size: .9375rem; text-decoration: none; font-family: var(--font-body); border: 1px solid rgba(255,255,255,.2); transition: background .2s; }
+    .btn-cta-secondary:hover { background: rgba(255,255,255,.18); }
 
-    /* Footer */
+    /* ── Footer ── */
     footer {
-      position  : relative;
-      z-index   : 1;
-      border-top: 1px solid var(--border);
-      padding   : 2rem 2.5rem;
-      display   : flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap : wrap;
-      gap       : 1rem;
+      background: var(--navy); color: rgba(255,255,255,.6);
+      padding: 1.75rem 2.5rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
-    .footer-logo {
-      font-family   : var(--font-head);
-      font-size     : .85rem;
-      font-weight   : 600;
-      color         : var(--cyan);
-      letter-spacing: .18em;
-    }
-    .footer-logo span { color: var(--muted); }
-    footer p {
-      color    : var(--muted);
-      font-size: .7rem;
-      text-align: center;
-    }
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a {
-      color          : var(--muted);
-      text-decoration: none;
-      font-size      : .72rem;
-      font-weight    : 500;
-      transition     : color .2s;
-    }
-    .footer-links a:hover { color: var(--cyan); }
-
-    @media(max-width:600px) {
-      nav { padding: 1rem; }
-      .nav-links { gap: 1rem; }
-      .stats-bar { flex-wrap: wrap; }
-      .stat-item { flex: 1 1 45%; border-right: none; border-bottom: 1px solid var(--border); }
-      footer { flex-direction: column; text-align: center; }
-      .footer-links { justify-content: center; }
-    }
+    .footer-logo { font-family: var(--font-head); font-size: .95rem; font-weight: 700; color: #fff; }
+    .footer-logo em { font-style: italic; color: rgba(255,255,255,.6); }
+    footer p { font-size: .8125rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.25rem; }
+    .footer-links a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .8125rem; font-weight: 500; transition: color .2s; }
+    .footer-links a:hover { color: #fff; }
+    @media(max-width:600px) { footer { flex-direction: column; text-align: center; } .footer-links { justify-content: center; } .stat-item { flex: 1 1 45%; border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); } }
   </style>
 </head>
 <body>
 
-<!-- ── Navbar (All Roman Urdu removed) ───────────────────────────────────── -->
 <nav>
-  <a class="nav-logo" href="index.html">E<span>·</span>VOTE</a>
+  <a class="nav-logo" href="index.html">E<em>·</em>Vote</a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
+    <a href="index.html" class="active">Home</a>
     <a href="register.html">Register</a>
     <a href="login.html">Login</a>
     <a href="result.html">Results</a>
+    <a href="admin/index.html" class="nav-admin">Admin ↗</a>
     <a href="login.html" class="nav-cta">Cast Vote</a>
   </div>
 </nav>
 
-<!-- ── Hero (Fully English, no Roman Urdu) ────────────────────────────────── -->
+<!-- Hero -->
 <section class="hero">
-  <div class="particles" id="particles"></div>
-  <div class="hero-badge">SECURE DIGITAL ELECTION SYSTEM</div>
-  <h1 class="hero-title">
-    Pakistan's<br>
-    <span class="accent">Digital Vote</span><br>
-    <span class="dim">Secure · Transparent · Fast</span>
-  </h1>
-  <p class="hero-sub">
-    With fingerprint biometrics and advanced encryption — cast your vote safely from home. No fraud, no double voting.
-  </p>
-  <div class="hero-btns">
-    <a href="register.html" class="btn-primary">Register Now</a>
-    <a href="login.html" class="btn-secondary">Login → Vote</a>
-  </div>
-  <div class="scroll-hint">
-    <div class="scroll-line"></div>
-    SCROLL
+  <div class="hero-inner">
+    <div class="hero-tag">Secure Digital Election System</div>
+    <h1>Pakistan's<br><em>Digital Vote</em><br><span class="dim">Secure · Transparent · Fast</span></h1>
+    <p class="hero-sub">With fingerprint biometrics and advanced encryption — cast your vote safely from home. No fraud, no double voting.</p>
+    <div class="hero-btns">
+      <a href="register.html" class="btn-primary">Register Now</a>
+      <a href="login.html" class="btn-secondary">Login & Vote →</a>
+    </div>
   </div>
 </section>
 
-<!-- ── Stats bar (unchanged logic, text already English) ─────────────────── -->
+<!-- Stats bar -->
 <div class="stats-bar">
-  <div class="stat-item">
-    <span class="stat-num" id="stat-voters">--</span>
-    <span class="stat-label">Registered Voters</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" id="stat-voted">--</span>
-    <span class="stat-label">Votes Cast</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" id="stat-turnout">--%</span>
-    <span class="stat-label">Voter Turnout</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" id="stat-candidates">--</span>
-    <span class="stat-label">Candidates</span>
-  </div>
+  <div class="stat-item"><span class="stat-num" id="stat-voters">--</span><span class="stat-label">Registered Voters</span></div>
+  <div class="stat-item"><span class="stat-num" id="stat-voted">--</span><span class="stat-label">Votes Cast</span></div>
+  <div class="stat-item"><span class="stat-num" id="stat-turnout">--%</span><span class="stat-label">Voter Turnout</span></div>
+  <div class="stat-item"><span class="stat-num" id="stat-candidates">--</span><span class="stat-label">Candidates</span></div>
 </div>
 
-<!-- ── How it works section (All English, no Roman Urdu) ──────────────────── -->
+<!-- How it works -->
 <section>
   <div class="section-inner">
     <p class="section-label">Process</p>
-    <h2 class="section-title">How It Works?</h2>
+    <h2 class="section-title">How It Works</h2>
     <p class="section-sub">Cast your vote in 4 simple steps — with end-to-end security</p>
-
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">01</div>
@@ -627,77 +266,57 @@
   </div>
 </section>
 
-<!-- ── Security features (All English, roman urdu fully removed) ────────────── -->
+<!-- Security features -->
 <section class="features-section">
   <div class="section-inner">
     <p class="section-label">Security</p>
     <h2 class="section-title">Multi-Layer Protection</h2>
     <p class="section-sub">Security at every step — only real voters' votes are counted</p>
-
     <div class="features-grid">
       <div class="feature-item">
         <div class="feature-icon">🖐</div>
-        <div class="feature-body">
-          <h4>Fingerprint Biometrics</h4>
-          <p>ISO-format template stored via SecuGen HU20 scanner. Fingerprint match required for both login and vote.</p>
-        </div>
+        <div class="feature-body"><h4>Fingerprint Biometrics</h4><p>ISO-format template stored via SecuGen HU20 scanner. Fingerprint match required for both login and vote.</p></div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🔒</div>
-        <div class="feature-body">
-          <h4>Bcrypt Password Hashing</h4>
-          <p>Passwords are never stored in plain text — hashed with bcrypt salt rounds before entering database.</p>
-        </div>
+        <div class="feature-body"><h4>Bcrypt Password Hashing</h4><p>Passwords are never stored in plain text — hashed with bcrypt salt rounds before entering database.</p></div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">⏰</div>
-        <div class="feature-body">
-          <h4>Voting Schedule Lock</h4>
-          <p>Voting only possible within the time window set by admin. Early or late votes are blocked server-side.</p>
-        </div>
+        <div class="feature-body"><h4>Voting Schedule Lock</h4><p>Voting only possible within the time window set by admin. Early or late votes are blocked server-side.</p></div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🚫</div>
-        <div class="feature-body">
-          <h4>Double Vote Prevention</h4>
-          <p>Each voter can vote only once. Server-side verification ensures no client-side tampering.</p>
-        </div>
+        <div class="feature-body"><h4>Double Vote Prevention</h4><p>Each voter can vote only once. Server-side verification ensures no client-side tampering.</p></div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">📍</div>
-        <div class="feature-body">
-          <h4>Location Tracking</h4>
-          <p>GPS coordinates captured at time of vote. City/area name is retrieved via OpenStreetMap Nominatim.</p>
-        </div>
+        <div class="feature-body"><h4>Location Tracking</h4><p>GPS coordinates captured at time of vote. City/area name retrieved via OpenStreetMap Nominatim.</p></div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🛡️</div>
-        <div class="feature-body">
-          <h4>Session Management</h4>
-          <p>Separate admin and voter sessions. Every protected route verifies session — unauthorized access blocked.</p>
-        </div>
+        <div class="feature-body"><h4>Session Management</h4><p>Separate admin and voter sessions. Every protected route verifies session — unauthorized access blocked.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA section (no roman urdu) ────────────────────────────────────────── -->
+<!-- CTA -->
 <section class="cta-section">
   <div class="section-inner">
     <div class="cta-box">
       <h2>Ready? Time to Vote</h2>
       <p>Register now or login to cast your vote. Your voice, your right.</p>
       <div class="cta-btns">
-        <a href="register.html" class="btn-primary">Register Now</a>
-        <a href="login.html" class="btn-secondary">Login → Vote</a>
+        <a href="register.html" class="btn-cta-primary">Register Now</a>
+        <a href="login.html" class="btn-cta-secondary">Login & Vote →</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Footer (English only) ─────────────────────────────────────────────── -->
 <footer>
-  <div class="footer-logo">E<span>·</span>VOTE</div>
+  <div class="footer-logo">E<em>·</em>Vote</div>
   <p>© 2025 E-Voting System · Flask · MongoDB · SecuGen HU20</p>
   <div class="footer-links">
     <a href="result.html">Results</a>
@@ -708,23 +327,6 @@
 </footer>
 
 <script>
-  // Floating particles (same as original, untouched)
-  const container = document.getElementById("particles");
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement("div");
-    p.className = "particle";
-    p.style.cssText = `
-      left: ${Math.random() * 100}%;
-      animation-duration: ${8 + Math.random() * 14}s;
-      animation-delay: ${Math.random() * 12}s;
-      width: ${Math.random() > .7 ? 3 : 2}px;
-      height: ${Math.random() > .7 ? 3 : 2}px;
-      opacity: ${.3 + Math.random() * .4};
-    `;
-    container.appendChild(p);
-  }
-
-  // Live stats from backend (exactly same logic, no changes)
   async function loadStats() {
     try {
       const [statsRes, candRes] = await Promise.all([
@@ -741,9 +343,7 @@
         const c = await candRes.json();
         animateNum("stat-candidates", c.results ? c.results.length : 0);
       }
-    } catch (e) {
-      // Backend down — placeholders remain
-    }
+    } catch(e) { /* Backend down — placeholders remain */ }
   }
 
   function animateNum(id, target) {

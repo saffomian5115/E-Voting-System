@@ -1,23 +1,45 @@
 """
 fingerprint.py — Module 2: Fingerprint Engine
-SecuGen HU20 + SGI BWAPI based fingerprint matching
-
-Architecture:
-  - Templates ISO 19794-2 format mein store hote hain (base64 encoded)
-  - Matching server-side hoti hai — client pe KABHI nahi
-  - Score threshold: 40+ = match (configurable)
+SecuGen HU20 + SgiBioSrv (HTTPS on port 8443)
 """
 
-import base64
-import hashlib
-import hmac
-import os
+import base64, hmac, os, json, ssl, urllib.request, urllib.error
 from typing import Optional
 from config import voters_col
 
-# ─── Constants ────────────────────────────────────────────────────────────────
 MATCH_THRESHOLD = int(os.getenv("FP_MATCH_THRESHOLD", "40"))
-BWAPI_URL       = os.getenv("BWAPI_URL", "http://localhost:9734")
+BWAPI_URL       = os.getenv("BWAPI_URL", "https://localhost:8443")
+BWAPI_ORIGIN    = os.getenv("BWAPI_ORIGIN", "https://localhost:8443")
+
+
+def _ssl_ctx():
+    """Self-signed cert — skip verification."""
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode    = ssl.CERT_NONE
+    return ctx
+
+
+def _bwapi_post(endpoint: str, payload: dict) -> Optional[dict]:
+    """Generic HTTPS POST to SgiBioSrv. Returns parsed JSON or None."""
+    data = json.dumps(payload).encode("utf-8")
+    req  = urllib.request.Request(
+        url    = f"{BWAPI_URL}/{endpoint}",
+        data   = data,
+        method = "POST",
+        headers= {
+            "Content-Type": "application/json",
+            "Origin"      : BWAPI_ORIGIN,
+        }
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5, context=_ssl_ctx()) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.URLError:
+        return None
+    except Exception as e:
+        print(f"[FP] BWAPI post error: {e}")
+        return None
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -25,39 +47,20 @@ BWAPI_URL       = os.getenv("BWAPI_URL", "http://localhost:9734")
 # ══════════════════════════════════════════════════════════════════════════════
 
 def store_template(voter_id: str, base64_template: str) -> bool:
-    """
-    Voter ka fingerprint template MongoDB mein store karo.
-
-    Args:
-        voter_id       : voter ka _id (string)
-        base64_template: ISO template, base64 encoded
-
-    Returns:
-        True  — successfully stored
-        False — kuch error aaya
-    """
     try:
         _validate_b64(base64_template)
-
         from bson import ObjectId
         result = voters_col.update_one(
             {"_id": ObjectId(voter_id)},
             {"$set": {"fp_template": base64_template}}
         )
         return result.modified_count > 0
-
     except Exception as e:
         print(f"[FP] store_template error: {e}")
         return False
 
 
 def get_template(voter_id: str) -> Optional[str]:
-    """
-    DB se voter ka stored template nikalo.
-
-    Returns:
-        base64 string ya None
-    """
     try:
         from bson import ObjectId
         voter = voters_col.find_one(
@@ -76,36 +79,18 @@ def get_template(voter_id: str) -> Optional[str]:
 
 def match_template(incoming_b64: str, stored_b64: str,
                    threshold: int = MATCH_THRESHOLD) -> bool:
-    """
-    Do fingerprint templates match karte hain ya nahi.
-
-    Priority:
-      1. SecuGen BWAPI server available hai → SDK matching (accurate)
-      2. Fallback → byte-similarity score (demo/dev mode)
-
-    Args:
-        incoming_b64: naya scan, base64
-        stored_b64  : DB mein stored template, base64
-        threshold   : minimum score for match (default 40)
-
-    Returns:
-        True  — match confirmed
-        False — no match
-    """
     try:
         _validate_b64(incoming_b64)
         _validate_b64(stored_b64)
 
-        # Try BWAPI SDK match first
         score = _bwapi_match(incoming_b64, stored_b64)
 
         if score is None:
-            # Fallback: byte similarity (dev/demo only)
-            print("[FP] BWAPI unavailable — byte similarity fallback use ho raha hai")
+            print("[FP] BWAPI unavailable — byte similarity fallback")
             score = _byte_similarity_score(incoming_b64, stored_b64)
 
-        print(f"[FP] Match score: {score} | Threshold: {threshold} | "
-              f"Result: {'MATCH' if score >= threshold else 'NO MATCH'}")
+        print(f"[FP] Score: {score} | Threshold: {threshold} | "
+              f"{'MATCH' if score >= threshold else 'NO MATCH'}")
 
         return score >= threshold
 
@@ -115,91 +100,49 @@ def match_template(incoming_b64: str, stored_b64: str,
 
 
 def match_by_voter_id(voter_id: str, incoming_b64: str) -> bool:
-    """
-    Convenience: voter ID se stored template fetch karo aur match karo.
-
-    Args:
-        voter_id    : MongoDB voter _id
-        incoming_b64: naya fingerprint scan, base64
-
-    Returns:
-        True = verified, False = mismatch ya error
-    """
     stored = get_template(voter_id)
     if not stored:
-        print(f"[FP] Voter {voter_id} ka template DB mein nahi mila")
+        print(f"[FP] No template found for voter {voter_id}")
         return False
     return match_template(incoming_b64, stored)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 3 — BWAPI Integration (SecuGen SDK)
+# SECTION 3 — BWAPI Calls
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _bwapi_match(t1_b64: str, t2_b64: str) -> Optional[int]:
     """
-    SecuGen BWAPI /SGIFPCapture/MatchScore endpoint call karo.
-
-    BWAPI local service (FPWebHost.exe) port 9734 pe hoti hai.
-    Ye endpoint do templates leta hai aur match score return karta hai.
-
-    Returns:
-        int score (0-200) ya None agar BWAPI unavailable ho
+    POST to /SGIMatchScore — returns 0-199 score or None if unavailable.
     """
-    import urllib.request
-    import urllib.error
-    import json
+    data = _bwapi_post("SGIMatchScore", {
+        "Template1"     : t1_b64,
+        "Template2"     : t2_b64,
+        "TemplateFormat": "ISO",
+    })
 
-    payload = json.dumps({
-        "Template1": t1_b64,
-        "Template2": t2_b64
-    }).encode("utf-8")
-
-    try:
-        req = urllib.request.Request(
-            url    = f"{BWAPI_URL}/SGIFPCapture/MatchScore",
-            data   = payload,
-            method = "POST",
-            headers= {"Content-Type": "application/json"}
-        )
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            data  = json.loads(resp.read().decode())
-            score = int(data.get("MatchingScore", 0))
-            return score
-
-    except urllib.error.URLError:
-        # BWAPI chal nahi rahi — fallback pe chale jaenge
+    if data is None:
         return None
-    except Exception as e:
-        print(f"[FP] BWAPI match error: {e}")
+
+    if data.get("ErrorCode", -1) != 0:
+        print(f"[FP] SGIMatchScore ErrorCode: {data.get('ErrorCode')}")
         return None
+
+    return int(data.get("MatchingScore", 0))
 
 
 def _byte_similarity_score(t1_b64: str, t2_b64: str) -> int:
-    """
-    DEV/DEMO ONLY — PRODUCTION MEIN USE MAT KARO.
-
-    Byte-level comparison se ek rough similarity score nikalta hai.
-    Sirf tab use hota hai jab BWAPI available na ho.
-
-    Real hardware pe hamesha _bwapi_match use hoti hai.
-
-    Score range: 0–100
-    """
+    """DEV ONLY — rough byte comparison fallback."""
     b1 = base64.b64decode(t1_b64)
     b2 = base64.b64decode(t2_b64)
 
-    # Same template = instant 100
     if hmac.compare_digest(b1, b2):
         return 100
 
-    # Shorter length tak compare karo
     min_len     = min(len(b1), len(b2))
     max_len     = max(len(b1), len(b2))
     match_bytes = sum(1 for a, b in zip(b1[:min_len], b2[:min_len]) if a == b)
-
-    raw_score   = (match_bytes / max_len) * 100
-    return int(raw_score)
+    return int((match_bytes / max_len) * 100)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -207,21 +150,20 @@ def _byte_similarity_score(t1_b64: str, t2_b64: str) -> int:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _validate_b64(data: str) -> None:
-    """Base64 valid hai ya nahi — exception raise karo agar nahi."""
     try:
         decoded = base64.b64decode(data, validate=True)
         if len(decoded) < 10:
-            raise ValueError("Template bohot chota hai — valid fingerprint template nahi lagta")
+            raise ValueError("Template too small")
     except Exception as e:
         raise ValueError(f"Invalid base64 fingerprint template: {e}")
 
 
 def is_bwapi_alive() -> bool:
-    """BWAPI service ping karo — True agar available ho."""
-    import urllib.request
-    import urllib.error
-    try:
-        urllib.request.urlopen(BWAPI_URL, timeout=2)
-        return True
-    except:
+    """Ping SgiBioSrv — ErrorCode 0 or 54 both mean service is running."""
+    data = _bwapi_post("SGIFPCapture", {
+        "Timeout"       : 100,
+        "TemplateFormat": "ISO",
+    })
+    if data is None:
         return False
+    return data.get("ErrorCode") in [0, 54, 55, 59]

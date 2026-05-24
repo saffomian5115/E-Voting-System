@@ -225,7 +225,7 @@
     async function pingBWAPI() {
       log("[TEST] Pinging BWAPI...", "inf");
       try {
-        const res = await fetch("http://localhost:9734", { mode: "no-cors" });
+        const res = await fetch("https://localhost:8443", { mode: "no-cors" });
         // no-cors means we can't read response, but no error = alive
         setBadge("bwapi-badge", "✓ BWAPI Online", "green");
         log("[OK] BWAPI is responding on port 9734", "ok");

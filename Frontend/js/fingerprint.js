@@ -1,21 +1,11 @@
-/**
- * fingerprint.js — Module 2: Frontend Fingerprint Engine
- * SecuGen HU20 + SGI BWAPI (FPWebHost on port 9734)
- *
- * Public API:
- *   FingerprintScanner.init(containerId)   — UI mount karo
- *   FingerprintScanner.capture()           — scan karo, base64 return karo
- *   FingerprintScanner.verify(voterId)     — server se match karo
- *   FingerprintScanner.reset()             — UI reset karo
- */
-
 const FingerprintScanner = (() => {
 
-  // ── Config ────────────────────────────────────────────────────────────────
-  const BWAPI_BASE   = "http://localhost:9734";
-  const BACKEND_BASE = "http://localhost:5000/api";
-  const CAPTURE_URL  = `${BWAPI_BASE}/SGIFPCapture`;
-  const TIMEOUT_MS   = 10000;
+// ── Config ────────────────────────────────────────────────────────────────
+const BWAPI_BASE   = "https://localhost:8443";
+const BACKEND_BASE = "http://localhost:5000/api";
+const CAPTURE_URL  = `${BWAPI_BASE}/SGIFPCapture`;
+const TIMEOUT_MS   = 15000;
+const BWAPI_ORIGIN = "http://localhost:5000";  
 
   // ── State ─────────────────────────────────────────────────────────────────
   let _containerId   = null;
@@ -150,41 +140,37 @@ const FingerprintScanner = (() => {
     try {
       const res = await fetch(CAPTURE_URL, {
         method : "POST",
-        headers: { "Content-Type": "application/json" },
-        body   : JSON.stringify({
-          Timeout     : 10000,
-          Quality     : 50,     // min acceptable quality
-          licstr      : "",
-          templateformat: "ISO",
+        headers: {
+          "Content-Type": "application/json",
+          "Origin"      : window.location.origin,  // ← fixes ErrorCode 10004
+        },
+        body: JSON.stringify({
+          Timeout       : 10000,
+          TemplateFormat: "ISO",
+          licstr        : "",
         }),
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
-      if (!res.ok) {
-        throw new Error(`BWAPI HTTP ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`BWAPI HTTP ${res.status}`);
 
       const data = await res.json();
 
-      // BWAPI returns ErrorCode 0 on success
       if (data.ErrorCode !== 0 && data.ErrorCode !== "0") {
-        throw new Error(`BWAPI error code: ${data.ErrorCode} — ${data.ErrorDescription || ""}`);
+        throw new Error(`BWAPI error ${data.ErrorCode}`);
       }
 
-      if (!data.BMPBase64 && !data.TemplateBase64) {
-        throw new Error("BWAPI se template nahi aaya — finger theek se rakho");
+      if (!data.TemplateBase64) {
+        throw new Error("No template — place finger firmly on scanner");
       }
 
-      // TemplateBase64 prefer karo (ISO format), warna BMPBase64
-      return data.TemplateBase64 || data.BMPBase64;
+      return data.TemplateBase64;
 
     } catch (err) {
       clearTimeout(timeoutId);
-      if (err.name === "AbortError") {
-        throw new Error("Timeout — BWAPI ne 10s mein jawab nahi diya");
-      }
+      if (err.name === "AbortError") throw new Error("Timeout — place finger and try again");
       throw err;
     }
   }
